@@ -17,5 +17,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/greimel/TabularMakie.jl",
+    repo = "github.com/greimel/TabularMakie.jl",
+    devbranch = "main",
+    push_preview = true,
 )
