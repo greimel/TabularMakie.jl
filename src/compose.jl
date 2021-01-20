@@ -3,8 +3,14 @@ function tplot(P, df, x_var, y_var; attr_var_pairs...)
 	
 	# 1. Grouping	
 	dict = Dict(attr_var_pairs...)
-	grp_x = pop!(dict, :layout_x, nothing)
-	grp_y = pop!(dict, :layout_y, nothing)
+
+	layout_vars = let
+		grp_x    = pop!(dict, :layout_x, nothing)
+		grp_y    = pop!(dict, :layout_y, nothing)
+		grp_wrap = pop!(dict, :layout_wrap, nothing) 
+	
+		(; grp_x, grp_y, grp_wrap)
+	end
 	
 	@unpack group_pairs, style_pairs, kws = group_style_other(df, dict)
 	
@@ -14,7 +20,7 @@ function tplot(P, df, x_var, y_var; attr_var_pairs...)
 	# 2a. Plot
 	
 	# 2b. Layout
-	grouped_plot_layout(P, fig, df, x_var, y_var, grp_x, grp_y, group_dict, style_dict, kws, group_pairs, style_pairs)
+	grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs)
 	
 	# 3. Legend
 	leg, cb = nothing, nothing

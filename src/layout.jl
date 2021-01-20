@@ -1,46 +1,72 @@
-function grouped_plot_layout(P, fig, df, x_var, y_var, grp_x, grp_y, group_dict, style_dict, kws, groups, styles)
+function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, style_dict, kws, groups, styles)
 	linkxaxes  = true
 	linkyaxes  = true
 	linkzcolor = true
 	
-	N_x = isnothing(grp_x) ? 1 : length(unique(df[:, grp_x]))
-	N_y = isnothing(grp_y) ? 1 : length(unique(df[:, grp_y]))
+	@unpack grp_x, grp_y, grp_wrap = layout_vars
 	
-	axs = [Axis(fig) for i in 1:N_y, j in 1:N_x]
-	for i in 1:N_y, j in 1:N_x
-		fig[1,1][i, j] = axs[i,j]
+	if isnothing(grp_wrap)
+		I = isnothing(grp_y) ? 1 : length(unique(df[:, grp_y]))
+		J = isnothing(grp_x) ? 1 : length(unique(df[:, grp_x]))
+		N = I * J
+	else
+		N = length(unique(df[:, grp_wrap]))
+		J = ceil(Int, sqrt(N))
+		I = ceil(Int, N / J)
+	end
+
+	axs = [Axis(fig) for i in 1:I, j in 1:J]
+	for i in 1:I, j in 1:J
+		ax = axs[i,j]
+		if (i-1) * J + j > N
+			hidespines!(ax)
+			hidedecorations!(ax)
+		end
+		fig[1,1][i, j] = ax
 	end
 			
-	grp = Symbol[]
-	isnothing(grp_x) || push!(grp, grp_x)
-	isnothing(grp_y) || push!(grp, grp_y)
-		
+	grp = filter(!isnothing, collect(layout_vars))
+	
 	out = combine(groupby(df, grp)) do groupdf
 		# Compute group key and index for layouting variables
-		if !isnothing(grp_x)
-			xkey = groupdf[:,grp_x] |> unique |> only
-			xind = groupdf[:,grp_x] |> refarray |> unique |> only |> Int
-		else
-			xind = 1
-		end
 		if !isnothing(grp_y)
 			ykey = groupdf[:,grp_y] |> unique |> only
-			yind = groupdf[:,grp_y] |> refarray |> unique |> only |> Int
+			i = groupdf[:,grp_y] |> refarray |> unique |> only |> Int
 		else
-			yind = 1
+			i = 1
 		end
-		
+		if !isnothing(grp_x)
+			xkey = groupdf[:,grp_x] |> unique |> only
+			j = groupdf[:,grp_x] |> refarray |> unique |> only |> Int
+		else
+			j = 1
+		end
+		if !isnothing(grp_wrap)
+			wrapkey = groupdf[:,grp_wrap] |> unique |> only
+			ind = groupdf[:,grp_wrap] |> refarray |> unique |> only |> Int
+
+			i, j = fldmod1(ind, J) 
+		end
+			
 		# Do the plot
-		plt = grouped_plot(P, axs[yind, xind], groupdf, group_dict, x_var, y_var, kws, groups, styles)
+		plt = grouped_plot(P, axs[i, j], groupdf, group_dict, x_var, y_var, kws, groups, styles)
 				
 		# Add labels for faceting
-		if !isnothing(grp_x) && yind == 1 
-			fig[1,1][1, xind, Top()] = Box(fig, color=:lightgray)
-			fig[1,1][1, xind, Top()] = Label(fig, string(xkey))
+		if !isnothing(grp_wrap) 
+			fig[1,1][i, j, Top()] = Box(fig, color=:lightgray)
+			fig[1,1][i, j, Top()] = Label(fig, string(wrapkey))
 		end
-		if !isnothing(grp_y) && xind == 1 
-	    	fig[1,1][yind, 1, Right()] = Box(fig, color=:lightgray)
-			fig[1,1][yind, 1, Right()] = Label(fig, string(ykey), rotation = -pi/2)
+		if !isnothing(grp_y) && j == 1 
+	    	fig[1,1][i, 1, Right()] = Box(fig, color=:lightgray)
+			fig[1,1][i, 1, Right()] = Label(fig, string(ykey), rotation = -pi/2)
+		end
+		if !isnothing(grp_x) && i == 1 
+			fig[1,1][1, j, Top()] = Box(fig, color=:lightgray)
+			fig[1,1][1, j, Top()] = Label(fig, string(xkey))
+		end
+		if !isnothing(grp_y) && j == 1 
+	    	fig[1,1][i, 1, Right()] = Box(fig, color=:lightgray)
+			fig[1,1][i, 1, Right()] = Label(fig, string(ykey), rotation = -pi/2)
 		end
 
 		(; plt)#, color=:red)
@@ -52,9 +78,24 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, grp_x, grp_y, group_dict,
 
 	# Link axes
 	linkyaxes && linkyaxes!(axs...)
-	linkxaxes && linkxaxes!(axs...)	
-	linkyaxes && hidexdecorations!.(axs[1:end-1, :], grid = false)
-    linkxaxes && hideydecorations!.(axs[:, 2:end], grid = false)
+	linkxaxes && linkxaxes!(axs...)
+
+    linkyaxes && hideydecorations!.(axs[:, 2:end], grid = false)
+
+	if linkxaxes
+		for i in 1:I, j in 1:J
+			needs_deco = needs_xdecorations(i, j, J, N)
+			if (i < I-1) || ((i == I-1) && !needs_deco)
+				hidexdecorations!(axs[i,j], grid = false)
+			end
+			if (i < I) && needs_deco
+				# TODO: this hack needs to be removed when functionality is added to GridLayoutBase
+				prot = axs[i,j].layoutobservables.protrusions[]
+    			newprot = MakieLayout.GridLayoutBase.RectSides(prot.left, prot.right, 0f0, prot.top)
+				axs[i,j].layoutobservables.protrusions[] = newprot
+			end
+		end
+	end
 	
 	if linkzcolor && haskey(style_dict, :color)
 		for p in out.plt
@@ -72,6 +113,11 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, grp_x, grp_y, group_dict,
 	#fig[1,1,Left()]   = Label(fig, string(y_var), rotation = pi/2, padding = (0,80,0,0))
 	#fig[1,1,Bottom()] = Label(fig, string(x_var), padding = (0, 0, 0, 0))
 	
+end
+
+# Check if there is a non-empty axis in the position just below
+function needs_xdecorations(i,j,J,N)
+	i * J + j > N
 end
 
 function span_label(axis, spanned_label, axs, figpos)
