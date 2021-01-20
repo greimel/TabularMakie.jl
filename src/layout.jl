@@ -58,13 +58,12 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, grp_x, grp_y, group_dict,
 	
 	if linkzcolor && haskey(style_dict, :color)
 		for p in out.plt
-			if length(p) == 1
-
-				p.plt.colorrange = style_dict[:color]
-			else
-				for p_ in p
+			if p.plt isa Vector
+				for p_ in p.plt
 					p_.colorrange = style_dict[:color]
 				end
+			else
+				p.plt.colorrange = style_dict[:color]
 			end
 		end
 	end

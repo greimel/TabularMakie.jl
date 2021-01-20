@@ -20,11 +20,20 @@ end
 
 function _grouped_plot(::Incremental, P, ax, gdf, group_dict, x_var, y_var, kws, group_pairs, style_pairs)
 	
-	## TODO! need correct grouping here!
-	out = combine(groupby(gdf, :grp)) do df
+	if length(group_pairs) > 0
+		grp = Symbol[Symbol(p[2]) for p in pairs(group_pairs)]
+	else
+		grp = Symbol[]
+	end
+
+	if haskey(group_pairs, :group)
+		group_pairs = delete(group_pairs, :group)
+	end
+
+	out = combine(groupby(gdf, grp)) do df
 		x = df[:, x_var]
 		y = df[:, y_var]
-	
+		
 		pairs = lookup_symbols(df, group_pairs, style_pairs, group_dict)
 		
 		plt = plot!(P, ax, x, y; kws..., pairs...)

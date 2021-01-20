@@ -12,6 +12,7 @@ using StructArrays
 using UnPack: @unpack
 using DataAPI: refarray
 #using Statistics
+using NamedTupleTools: delete
 
 include("attribute-dicts.jl")
 include("plot.jl")
