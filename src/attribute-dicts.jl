@@ -1,7 +1,7 @@
 function build_group_dict(df, group_pairs)
 	group_dict = Dict()
 	for (attr, var) in pairs(group_pairs)
-		if attr ∉ [:stack, :dodge]
+		if attr ∉ [:stack, :dodge, :group]
 			var_levels = levels(df[:,var])
 			thm = AbstractPlotting.current_default_theme().palette
 		
