@@ -45,7 +45,7 @@ ts_df = let
 	rename!(ts_df, grps)
 	transform!(ts_df, grps .=> categorical, renamecols = false)
 	
-	transform!(ts_df, :g_co => refarray => :s_co)
+	transform!(ts_df, :g_co => (x -> refarray(x) .+ rand.())  => :s_co)
 	transform!(ts_df, :s_co => ByRow(float) => :s_co)
 	
 	ts_df[:,:grp] = 1:size(ts_df, 1) |> categorical
@@ -95,7 +95,7 @@ save("fig_ts1.svg", fig) # hide
 ```@example ts
 using TabularMakie, CairoMakie
 
-fig = lplot(Lines, ts_df, :t, :v; color = :s_co, layout_y = :g_la, group = :grp )
+fig = lplot(Lines, ts_df, :t, :v; color = :s_co, layout_y = :g_co, group = :grp )
 save("fig_ts2.svg", fig) # hide
 ```
 
