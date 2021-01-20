@@ -50,25 +50,23 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 			
 		# Do the plot
 		plt = grouped_plot(P, axs[i, j], groupdf, group_dict, x_var, y_var, kws, groups, styles)
-				
+		
+		let 
+			padding = (3f0, 3f0, 3f0, 3f0)
 		# Add labels for faceting
 		if !isnothing(grp_wrap) 
 			fig[1,1][i, j, Top()] = Box(fig, color=:lightgray)
-			fig[1,1][i, j, Top()] = Label(fig, string(wrapkey))
-		end
-		if !isnothing(grp_y) && j == 1 
-	    	fig[1,1][i, 1, Right()] = Box(fig, color=:lightgray)
-			fig[1,1][i, 1, Right()] = Label(fig, string(ykey), rotation = -pi/2)
+			fig[1,1][i, j, Top()] = Label(fig, string(wrapkey); padding)
 		end
 		if !isnothing(grp_x) && i == 1 
 			fig[1,1][1, j, Top()] = Box(fig, color=:lightgray)
-			fig[1,1][1, j, Top()] = Label(fig, string(xkey))
+			fig[1,1][1, j, Top()] = Label(fig, string(xkey); padding)
 		end
 		if !isnothing(grp_y) && j == 1 
 	    	fig[1,1][i, 1, Right()] = Box(fig, color=:lightgray)
-			fig[1,1][i, 1, Right()] = Label(fig, string(ykey), rotation = -pi/2)
+			fig[1,1][i, 1, Right()] = Label(fig, string(ykey); padding, rotation = -pi/2)
 		end
-
+	end
 		(; plt)#, color=:red)
 	end	
 	
