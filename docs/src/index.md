@@ -76,12 +76,12 @@ This is how it looks.
 ```@example cs
 using TabularMakie, CairoMakie
 
-fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize = :s_m, layout_y = :g_lx)
+fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize = :s_m, layout_wrap = :g_lx)
 
-save("fig_001.svg", fig) # hide
+save("fig_cs1.svg", fig) # hide
 ```
 
-![fig_001](fig_001.svg)
+![fig_cs1](fig_cs1.svg)
 
 ```@example ts
 using TabularMakie, CairoMakie
