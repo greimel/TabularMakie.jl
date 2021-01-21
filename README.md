@@ -47,7 +47,7 @@ fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize
 
 * supports `layout_wrap` (in addition to `layout_x` and `layout_y`)
 * generates legend for continuous aesthetics (e.g. markersize and linewidth)
-* generates a colorbar if `color` is provided with a categorical variable
+* generates a colorbar if `color` is provided with a continuous variable
 * adds a non-incremental mode for creating a plot, this allows creation of grouped bar plots
 * allows access of the legend to change position and attributes
 
