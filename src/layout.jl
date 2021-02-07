@@ -6,11 +6,11 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 	@unpack grp_x, grp_y, grp_wrap = layout_vars
 	
 	if isnothing(grp_wrap)
-		I = isnothing(grp_y) ? 1 : length(unique(df[:, grp_y]))
-		J = isnothing(grp_x) ? 1 : length(unique(df[:, grp_x]))
+		I = isnothing(grp_y) ? 1 : length(unique(get(df, grp_y)))
+		J = isnothing(grp_x) ? 1 : length(unique(get(df, grp_x)))
 		N = I * J
 	else
-		N = length(unique(df[:, grp_wrap]))
+		N = length(unique(get(df, grp_wrap)))
 		J = ceil(Int, sqrt(N))
 		I = ceil(Int, N / J)
 	end
@@ -27,23 +27,24 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 			
 	grp = filter(!isnothing, collect(layout_vars))
 	
-	out = combine(groupby(df, grp)) do groupdf
+
+	out = combine(groupby(df, var_key.(grp))) do groupdf
 		# Compute group key and index for layouting variables
 		if !isnothing(grp_y)
-			ykey = groupdf[:,grp_y] |> unique |> only
-			i = groupdf[:,grp_y] |> refarray |> unique |> only |> Int
+			ykey = get(groupdf, grp_y) |> unique |> only
+			i = get(groupdf, grp_y) |> refarray |> unique |> only |> Int
 		else
 			i = 1
 		end
 		if !isnothing(grp_x)
-			xkey = groupdf[:,grp_x] |> unique |> only
-			j = groupdf[:,grp_x] |> refarray |> unique |> only |> Int
+			xkey = get(groupdf, grp_x) |> unique |> only
+			j = get(groupdf, grp_x) |> refarray |> unique |> only |> Int
 		else
 			j = 1
 		end
 		if !isnothing(grp_wrap)
-			wrapkey = groupdf[:,grp_wrap] |> unique |> only
-			ind = groupdf[:,grp_wrap] |> refarray |> unique |> only |> Int
+			wrapkey = get(groupdf, grp_wrap) |> unique |> only
+			ind = get(groupdf, grp_wrap) |> refarray |> unique |> only |> Int
 
 			i, j = fldmod1(ind, J) 
 		end
@@ -71,8 +72,8 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 	end	
 	
 	# spanned labels
-	span_label(:x, string(x_var), axs, fig[1,1])
-	span_label(:y, string(y_var), axs, fig[1,1])
+	span_label(:x, var_lab(x_var), axs, fig[1,1])
+	span_label(:y, var_lab(y_var), axs, fig[1,1])
 
 	# Link axes
 	linkyaxes && linkyaxes!(axs...)

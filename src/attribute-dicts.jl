@@ -2,7 +2,7 @@ function build_group_dict(df, group_pairs)
 	group_dict = Dict()
 	for (attr, var) in pairs(group_pairs)
 		if attr ∉ [:stack, :dodge, :group]
-			var_levels = levels(df[:,var])
+			var_levels = levels(get(df, var))
 			thm = AbstractPlotting.current_default_theme().palette
 		
 			group_dict[attr] = [var_levels[i] => thm[attr][][i] for i in 1:length(var_levels)]
@@ -15,7 +15,7 @@ end
 function build_style_dict(df, style_pairs)
 	style_dict = Dict()
 	for (attr, var) in pairs(style_pairs)
-		var_extr = extrema(df[:,var])
+		var_extr = extrema(get(df, var))
 		
 		style_dict[attr] = var_extr
 	end
@@ -30,8 +30,8 @@ function group_style_other(df, dict)
 	
 	
 	for (attr, var) in pairs(dict)
-		if var in propertynames(df)
-			if is_discrete(df[:,var])
+		if iscolumn(df, var)
+			if is_discrete(get(df, var))
 	  			group_[attr] = var
 			else
 				style_[attr] = var
@@ -67,7 +67,7 @@ function lookup_symbols(df, group_pairs, style_pairs, group_dict)
 	group_style_pairs = (; group_pairs..., style_pairs...)
 	
 	map(collect(pairs(group_style_pairs))) do (attr, var)
-		x0 = df[:, var]
+		x0 = get(df, var)
 		x = is_discrete(x0) && (attr ∉ [:stack, :dodge]) ? get_marker(x0, group_dict[attr]) |> unique_or_identity : x0
 		
 		attr => x

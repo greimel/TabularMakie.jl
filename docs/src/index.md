@@ -83,6 +83,36 @@ save("fig_cs1.svg", fig) # hide
 
 ![fig_cs1](fig_cs1.svg)
 
+We can use the DataFrames.jl minilanguage to transform columns or rename them. You have the following options.
+
+* `source_column => target_column_name`
+* `source_column => transformation`
+* `source_column => transformation => target_column_name`
+
+This is shown in the following example.
+
+```@example cs
+
+using CategoricalArrays: recode!
+
+rec_1(x) = recode!(x, "m 1" => "Nice name", "m 2" => "Other")
+rec_2(x) = recode!(x, "lx 1" => "Panel 1")
+minus1(x) = x .- 1
+
+fig = lplot(Scatter, cs_df,
+	:xxx => minus1,
+	:yyy => ByRow(x -> x + 1) => "the y plus one";
+	color = :s_c => "hey there",
+	marker = :g_m => rec_1 => "bla",
+	markersize = :s_m => :tada,
+	layout_wrap = :g_lx => rec_2	
+  )
+
+save("fig_cs2.svg", fig) # hide
+```
+
+![fig_cs2](fig_cs2.svg)
+
 ```@example ts
 using TabularMakie, CairoMakie
 

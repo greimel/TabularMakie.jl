@@ -60,13 +60,13 @@ function legend(P, fig, groups, styles, group_dict, style_dict)
 
 		pairs = group_dict[k]
 	
-		legend_discrete(P, k, pairs, string(groups[k]))
+		legend_discrete(P, k, pairs, var_lab(groups[k]))
 	end : nothing
 	
 	# special case colorbar
 	col_extr = pop!(style_dict, :color, nothing)
 	if !isnothing(col_extr)
-		cb = Colorbar(fig, limits=col_extr, label = string(styles[:color]))
+		cb = Colorbar(fig, limits=col_extr, label = var_lab(styles[:color]))
 		cb.width = 30
 		cb.height = Relative(0.7)
 	else	
@@ -79,7 +79,7 @@ function legend(P, fig, groups, styles, group_dict, style_dict)
 		
 		extr = style_dict[k]
 		
-		legend_continuous(P, k, extr, string(styles[k]))
+		legend_continuous(P, k, extr, var_lab(styles[k]))
 	end
 		
 	# Combine
