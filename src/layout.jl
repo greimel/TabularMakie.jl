@@ -87,10 +87,7 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 				hidexdecorations!(axs[i,j], grid = false)
 			end
 			if (i < I) && needs_deco
-				# TODO: this hack needs to be removed when functionality is added to GridLayoutBase
-				prot = axs[i,j].layoutobservables.protrusions[]
-    			newprot = MakieLayout.GridLayoutBase.RectSides(prot.left, prot.right, 0f0, prot.top)
-				axs[i,j].layoutobservables.protrusions[] = newprot
+				axs[i,j].alignmode = Mixed(bottom = MakieLayout.GridLayoutBase.Protrusion(0))
 			end
 		end
 	end
