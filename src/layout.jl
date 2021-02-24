@@ -112,7 +112,7 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 end
 
 # Check if there is a non-empty axis in the position just below
-function needs_xdecorations(i,j,J,N)
+function needs_xdecorations(i, j, J, N)
 	i * J + j > N
 end
 

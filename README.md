@@ -45,6 +45,7 @@ fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize
 
 ## What this package can do but AlgebraOfGraphics can't
 
+* rename or transform variables on the fly (e.g. `:xxx => "name of x"` or `:yyy => ByRow(log)`)
 * supports `layout_wrap` (in addition to `layout_x` and `layout_y`)
 * generates legend for continuous aesthetics (e.g. markersize and linewidth)
 * generates a colorbar if `color` is provided with a continuous variable
