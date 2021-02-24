@@ -56,6 +56,5 @@ fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize
 
 * combine different plots (e.g. `visual(Scatter) + linear`)
 * use other inputs than tables (the "slicing context")
-* handle plot types where the number of positional arguments is not 2 (e.g. `Band`)
 
 Open an issue if you find more.
