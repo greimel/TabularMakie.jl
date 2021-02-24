@@ -1,4 +1,4 @@
-function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, style_dict, kws, groups, styles)
+function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, groups, styles)
 	linkxaxes  = true
 	linkyaxes  = true
 	linkzcolor = true
@@ -50,7 +50,7 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 		end
 			
 		# Do the plot
-		plt = grouped_plot(P, axs[i, j], groupdf, group_dict, x_var, y_var, kws, groups, styles)
+		plt = grouped_plot(P, axs[i, j], groupdf, group_dict, args, kws, groups, styles)
 		
 		let 
 			padding = (3f0, 3f0, 3f0, 3f0)
@@ -72,8 +72,8 @@ function grouped_plot_layout(P, fig, df, x_var, y_var, layout_vars, group_dict, 
 	end	
 	
 	# spanned labels
-	span_label(:x, var_lab(x_var), axs, fig[1,1])
-	span_label(:y, var_lab(y_var), axs, fig[1,1])
+	span_label(:x, var_lab(args[1]), axs, fig[1,1])
+	span_label(:y, var_lab(args[2]), axs, fig[1,1])
 
 	# Link axes
 	linkyaxes && linkyaxes!(axs...)
