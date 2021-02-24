@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.12.20
+# v0.12.21
 
 using Markdown
 using InteractiveUtils
@@ -9,20 +9,36 @@ begin
 	using Pkg
 	Pkg.activate(temp = true)
 	Pkg.add(PackageSpec(name = "DataAPI", version = "1.4"))
+	Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "bar-rebased"))
 	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays"])
 	Pkg.add("PlutoUI")
 	
 	Pkg.develop("TabularMakie")
 	
 	using Revise, CairoMakie, DataFrames, CategoricalArrays, PooledArrays
-	using DataAPI: refarray
+	using DataAPI: DataAPI, refarray
 	using TabularMakie
 	using PlutoUI
+	
+	Base.show(io::IO, ::MIME"text/html", x::CategoricalArrays.CategoricalValue) = print(io, get(x))
 end
+
+# ╔═╡ b3ba674a-76bd-11eb-3a9a-f3583c9b7d94
+using Random: shuffle
 
 # ╔═╡ 6588b3e6-6941-11eb-198a-15e00c20cb5a
 md"""
 # Some Examples
+"""
+
+# ╔═╡ 904fef48-76be-11eb-26b4-fb433306bc3f
+md"""
+## Categorical axes
+"""
+
+# ╔═╡ 9cfe05a6-76be-11eb-06ed-a92dc0e547c4
+md"""
+## Grouped bar
 """
 
 # ╔═╡ a4051f48-6952-11eb-036e-37b3de9c37c2
@@ -129,13 +145,61 @@ out = lplot(Scatter, cs_df,
 	layout_wrap = :g_lx => rec_2	
   )
 
+# ╔═╡ 5c5a8fe8-76bd-11eb-234c-09a056b0c256
+band(1:10, rand(10), 5 .+ rand(10))
+
+# ╔═╡ 07ce7300-76b5-11eb-3132-2bea7add28e1
+cat_df = DataFrame(
+	x = rand(["a", "b", "c"], 100) |> categorical,
+	y = rand(100)
+	)
+
+# ╔═╡ 8030ddc6-76b5-11eb-030d-b79fd57b5a6f
+out_ = lplot(Scatter, cat_df, :x, :y)
+
+# ╔═╡ 96075d2a-76bd-11eb-2d9d-31333dd2f2fd
+bar_df = let
+	n_dodge = 2
+	n_x = 3
+	n_stack = 5
+	n = n_dodge * n_x * n_stack
+	
+	grp_dodge = ["dodge $i" for i in 1:n_dodge] |> categorical
+	grp_x     = ["x $i"     for i in 1: n_x] |> categorical
+	grp_stack = ["stack $i" for i in 1:n_stack] |> categorical
+	
+	df = Iterators.product(grp_dodge, grp_x, grp_stack) |> DataFrame
+	cols = [:grp_dodge, :grp_x, :grp_stack]
+	rename!(df, cols)
+	transform!(df, cols .=> categorical .=> cols)
+	
+	cols_i = cols .|> string .|> x -> x[5:end]  .|> x -> x * "_i"
+	transform!(df, cols .=> (x -> Int.(x.refs)) .=> cols_i)
+	
+	df[:,:y] = rand(n)
+	#shuffle
+	df = DataFrame(shuffle(eachrow(df)))
+	df
+end
+
+# ╔═╡ c92db4ce-76bd-11eb-0d6f-d55846f72e5b
+lplot(BarPlot, bar_df, :grp_x => "nice name for x", :y, stack = :grp_stack, dodge = :grp_dodge, color = :grp_stack)
+
+# ╔═╡ 1eff7f5a-76c0-11eb-247c-9bc3836564ed
+lplot(BarPlot, filter(:grp_stack => ==("stack 1"), bar_df), :grp_x, :y => ByRow(log), dodge = :grp_dodge, color = :grp_dodge)
+
 # ╔═╡ 911d9356-6952-11eb-1712-bd37da0cba85
 TableOfContents()
 
 # ╔═╡ Cell order:
 # ╟─6588b3e6-6941-11eb-198a-15e00c20cb5a
-# ╠═831aa510-6947-11eb-3694-21c2defdbaef
+# ╟─831aa510-6947-11eb-3694-21c2defdbaef
 # ╠═45624846-6950-11eb-1d56-35b025fbbaa4
+# ╟─904fef48-76be-11eb-26b4-fb433306bc3f
+# ╠═8030ddc6-76b5-11eb-030d-b79fd57b5a6f
+# ╟─9cfe05a6-76be-11eb-06ed-a92dc0e547c4
+# ╠═c92db4ce-76bd-11eb-0d6f-d55846f72e5b
+# ╠═1eff7f5a-76c0-11eb-247c-9bc3836564ed
 # ╟─a4051f48-6952-11eb-036e-37b3de9c37c2
 # ╠═6cf5fce8-6941-11eb-24f1-6d4281735519
 # ╠═5281fcf6-6946-11eb-34b9-79d05e3ec288
@@ -147,4 +211,8 @@ TableOfContents()
 # ╟─9bee489c-694e-11eb-3d8f-735277e3db10
 # ╠═346fba94-6950-11eb-0c18-43cb90d135b8
 # ╠═47184b9e-68ca-11eb-2595-3b8b241a2b9f
+# ╠═5c5a8fe8-76bd-11eb-234c-09a056b0c256
+# ╠═07ce7300-76b5-11eb-3132-2bea7add28e1
+# ╠═b3ba674a-76bd-11eb-3a9a-f3583c9b7d94
+# ╠═96075d2a-76bd-11eb-2d9d-31333dd2f2fd
 # ╠═911d9356-6952-11eb-1712-bd37da0cba85
