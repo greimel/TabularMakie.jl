@@ -55,6 +55,19 @@ rec_2(x) = recode!(x, "lx 1" => "Panel 1")
 # ╔═╡ 1a656cf2-694a-11eb-1c4f-edf4c99c3edc
 minus1(x) = x .- 1
 
+# ╔═╡ 2fec9ae6-76c4-11eb-35cd-c5c79181ed02
+md"""
+## Band
+"""
+
+# ╔═╡ 365c077a-76c4-11eb-14d1-47bcb751896c
+let
+	df = DataFrame(
+		x = 1:10, lo = rand(10), up = 5 .+ rand(10)
+	)
+	lplot(Band, df, :x, :lo => "nice y label", :up)
+end
+
 # ╔═╡ 69854f4e-6952-11eb-28c5-6dcf989a98f4
 md"""
 # Appendix
@@ -146,7 +159,7 @@ out = lplot(Scatter, cs_df,
   )
 
 # ╔═╡ 5c5a8fe8-76bd-11eb-234c-09a056b0c256
-band(1:10, rand(10), 5 .+ rand(10))
+
 
 # ╔═╡ 07ce7300-76b5-11eb-3132-2bea7add28e1
 cat_df = DataFrame(
@@ -205,6 +218,8 @@ TableOfContents()
 # ╠═5281fcf6-6946-11eb-34b9-79d05e3ec288
 # ╠═1a656cf2-694a-11eb-1c4f-edf4c99c3edc
 # ╠═4e1fd39c-68cc-11eb-3c84-b3127a09c2a2
+# ╟─2fec9ae6-76c4-11eb-35cd-c5c79181ed02
+# ╠═365c077a-76c4-11eb-14d1-47bcb751896c
 # ╟─69854f4e-6952-11eb-28c5-6dcf989a98f4
 # ╟─8672add8-6952-11eb-195e-4133c66f1e07
 # ╠═1cb400e6-68ca-11eb-287e-75c3fb94873f
