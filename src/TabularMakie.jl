@@ -10,12 +10,13 @@ using DataFrames
 using Underscores: @_
 using StructArrays
 using UnPack: @unpack
-using DataAPI: refarray
+using DataAPI: refpool, refarray
 #using Statistics
 using NamedTupleTools: delete
 
 include("mini-language.jl")
 include("attribute-dicts.jl")
+include("ticks.jl")
 include("plot.jl")
 include("layout.jl")
 include("legends.jl")

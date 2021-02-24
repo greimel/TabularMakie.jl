@@ -45,6 +45,7 @@ fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize
 
 ## What this package can do but AlgebraOfGraphics can't
 
+* rename or transform variables on the fly (e.g. `:xxx => "name of x"` or `:yyy => ByRow(log)`)
 * supports `layout_wrap` (in addition to `layout_x` and `layout_y`)
 * generates legend for continuous aesthetics (e.g. markersize and linewidth)
 * generates a colorbar if `color` is provided with a continuous variable
@@ -56,6 +57,5 @@ fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize
 * combine different plots (e.g. `visual(Scatter) + linear`)
 * use other inputs than tables (the "slicing context")
 * handle plot types where the number of positional arguments is not 2 (e.g. `Band`)
-* handle categorical variables as positional arguments correctly
 
 Open an issue if you find more.
