@@ -15,6 +15,8 @@ function _grouped_plot(::AllAtOnce, P, ax, df, group_dict, x_var, y_var, kws, gr
 
 	plt = plot!(P, ax, x, y; kws..., pairs...)
 	
+	categorical_ticks!(ax, x, y)
+
 	(; plt)
 end
 
@@ -37,6 +39,9 @@ function _grouped_plot(::Incremental, P, ax, gdf, group_dict, x_var, y_var, kws,
 		pairs = lookup_symbols(df, group_pairs, style_pairs, group_dict)
 		
 		plt = plot!(P, ax, x, y; kws..., pairs...)
+
+		categorical_ticks!(ax, x, y)
+		
 		(; plt)
 	end
 		
