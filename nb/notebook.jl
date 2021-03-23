@@ -9,7 +9,7 @@ begin
 	using Pkg
 	Pkg.activate(temp = true)
 	Pkg.add(PackageSpec(name = "DataAPI", version = "1.4"))
-	Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "bar-rebased"))
+	Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "groupedbar"))
 	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays"])
 	Pkg.add("PlutoUI")
 	
@@ -162,13 +162,23 @@ out = lplot(Scatter, cs_df,
 
 
 # ╔═╡ 07ce7300-76b5-11eb-3132-2bea7add28e1
-cat_df = DataFrame(
-	x = rand(["a", "b", "c"], 100) |> categorical,
-	y = rand(100)
-	)
+cat_df = let
+	N = 100
+	cat0 = rand(["Low", "Mid", "High"], N)
+	cat  = categorical(cat0, levels = ["Low", "Mid", "High"])
+	y    = rand(N)
+	
+	y .= y .- (cat0 .== "Low")
+	y .= y .+ (cat0 .== "High")
+
+	DataFrame(; cat0, cat, y)
+end
+
+# ╔═╡ c5777782-8bb7-11eb-2f40-3f2ca4012da6
+lplot(Scatter, cat_df, :cat0, :y)
 
 # ╔═╡ 8030ddc6-76b5-11eb-030d-b79fd57b5a6f
-out_ = lplot(Scatter, cat_df, :x, :y)
+lplot(Scatter, cat_df, :cat, :y)
 
 # ╔═╡ 96075d2a-76bd-11eb-2d9d-31333dd2f2fd
 bar_df = let
@@ -209,6 +219,7 @@ TableOfContents()
 # ╟─831aa510-6947-11eb-3694-21c2defdbaef
 # ╠═45624846-6950-11eb-1d56-35b025fbbaa4
 # ╟─904fef48-76be-11eb-26b4-fb433306bc3f
+# ╠═c5777782-8bb7-11eb-2f40-3f2ca4012da6
 # ╠═8030ddc6-76b5-11eb-030d-b79fd57b5a6f
 # ╟─9cfe05a6-76be-11eb-06ed-a92dc0e547c4
 # ╠═c92db4ce-76bd-11eb-0d6f-d55846f72e5b
