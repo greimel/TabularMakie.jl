@@ -1,4 +1,7 @@
-function tplot(P, df, args...; attr_var_pairs...)
+function tplot(P, df, args...;
+			   axis_attr = (;),
+			   attr_var_pairs...)
+
 	fig = Figure()
 	
 	# 1. Grouping	
@@ -25,7 +28,7 @@ function tplot(P, df, args...; attr_var_pairs...)
 	# 2a. Plot
 	
 	# 2b. Layout
-	grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs)
+	grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs, axis_attr)
 	
 	# 3. Legend
 	leg, cb = nothing, nothing

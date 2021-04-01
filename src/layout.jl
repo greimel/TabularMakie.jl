@@ -1,4 +1,4 @@
-function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, groups, styles)
+function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, groups, styles, axis_attr)
 	@unpack grp_x, grp_y, grp_wrap = layout_vars
 	@unpack linkxaxes, linkyaxes, linkzcolor = layout_vars
 	
@@ -12,7 +12,7 @@ function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_di
 		I = ceil(Int, N / J)
 	end
 
-	axs = [Axis(fig) for i in 1:I, j in 1:J]
+	axs = [Axis(fig; axis_attr...) for i in 1:I, j in 1:J]
 	for i in 1:I, j in 1:J
 		ax = axs[i,j]
 		if (i-1) * J + j > N
