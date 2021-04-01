@@ -12,6 +12,8 @@ function tplot(P, df, args...; attr_var_pairs...)
 		(; grp_x, grp_y, grp_wrap)
 	end
 	
+	title = pop!(dict, :title, nothing)
+	
 	@unpack group_pairs, style_pairs, kws = group_style_other(df, dict)
 	
 	group_dict = build_group_dict(df, group_pairs)
@@ -35,6 +37,10 @@ function tplot(P, df, args...; attr_var_pairs...)
 	end
 	if !isnothing(cb)
 		fig[1,2][1,i] = cb
+	end
+
+	if !isnothing(title)
+		Label(fig[0,:], title, tellwidth = false, tellheight = true)
 	end
 
 	(; fig, leg, cb)
