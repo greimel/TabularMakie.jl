@@ -1,4 +1,7 @@
-function tplot(P, df, args...; attr_var_pairs...)
+function tplot(P, df, args...;
+			   axis_attr = (;),
+			   attr_var_pairs...)
+
 	fig = Figure()
 	
 	# 1. Grouping	
@@ -8,9 +11,14 @@ function tplot(P, df, args...; attr_var_pairs...)
 		grp_x    = pop!(dict, :layout_x, nothing)
 		grp_y    = pop!(dict, :layout_y, nothing)
 		grp_wrap = pop!(dict, :layout_wrap, nothing) 
+		linkxaxes  = pop!(dict, :linkxaxes, true)
+		linkyaxes  = pop!(dict, :linkyaxes, true)
+		linkzcolor = pop!(dict, :linkzcolor, true)
 	
-		(; grp_x, grp_y, grp_wrap)
+		(; grp_x, grp_y, grp_wrap, linkxaxes, linkyaxes, linkzcolor)
 	end
+	
+	title = pop!(dict, :title, nothing)
 	
 	@unpack group_pairs, style_pairs, kws = group_style_other(df, dict)
 	
@@ -20,7 +28,7 @@ function tplot(P, df, args...; attr_var_pairs...)
 	# 2a. Plot
 	
 	# 2b. Layout
-	grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs)
+	grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs, axis_attr)
 	
 	# 3. Legend
 	leg, cb = nothing, nothing
@@ -35,6 +43,10 @@ function tplot(P, df, args...; attr_var_pairs...)
 	end
 	if !isnothing(cb)
 		fig[1,2][1,i] = cb
+	end
+
+	if !isnothing(title)
+		Label(fig[0,:], title, tellwidth = false, tellheight = true)
 	end
 
 	(; fig, leg, cb)
