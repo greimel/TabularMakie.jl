@@ -1,9 +1,6 @@
 function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, groups, styles)
-	linkxaxes  = true
-	linkyaxes  = true
-	linkzcolor = true
-	
 	@unpack grp_x, grp_y, grp_wrap = layout_vars
+	@unpack linkxaxes, linkyaxes, linkzcolor = layout_vars
 	
 	if isnothing(grp_wrap)
 		I = isnothing(grp_y) ? 1 : length(unique(get(df, grp_y)))
@@ -25,7 +22,7 @@ function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_di
 		fig[1,1][i, j] = ax
 	end
 			
-	grp = filter(!isnothing, collect(layout_vars))
+	grp = filter(!isnothing, collect((; grp_x, grp_y, grp_wrap)))
 	
 
 	out = combine(groupby(df, var_key.(grp))) do groupdf

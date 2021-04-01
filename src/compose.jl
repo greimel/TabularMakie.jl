@@ -8,8 +8,11 @@ function tplot(P, df, args...; attr_var_pairs...)
 		grp_x    = pop!(dict, :layout_x, nothing)
 		grp_y    = pop!(dict, :layout_y, nothing)
 		grp_wrap = pop!(dict, :layout_wrap, nothing) 
+		linkxaxes  = pop!(dict, :linkxaxes, true)
+		linkyaxes  = pop!(dict, :linkyaxes, true)
+		linkzcolor = pop!(dict, :linkzcolor, true)
 	
-		(; grp_x, grp_y, grp_wrap)
+		(; grp_x, grp_y, grp_wrap, linkxaxes, linkyaxes, linkzcolor)
 	end
 	
 	title = pop!(dict, :title, nothing)
