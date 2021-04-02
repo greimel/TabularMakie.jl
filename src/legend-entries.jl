@@ -43,7 +43,7 @@ function legend_continuous(P, attribute, extrema, title, n_ticks=4)
 	(; elements, labels, title)
 end
 
-function legend(P, groups, styles, group_dict, style_dict)
+function legend(P, groups, styles, group_dict, style_dict0)
 	groups_ = collect(keys(group_dict))
 
 	legends_grp = length(groups_) > 0 ? map(groups_) do k
@@ -53,6 +53,7 @@ function legend(P, groups, styles, group_dict, style_dict)
 		legend_discrete(P, k, pairs, var_lab(groups[k]))
 	end : nothing
 	
+	style_dict = deepcopy(style_dict0)
 	# special case colorbar
 	col_extr = pop!(style_dict, :color, nothing)
 	if !isnothing(col_extr)
