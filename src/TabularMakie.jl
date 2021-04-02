@@ -19,7 +19,8 @@ include("attribute-dicts.jl")
 include("ticks.jl")
 include("plot.jl")
 include("layout.jl")
-include("legends.jl")
+include("legend-entries.jl")
+include("legend-layout.jl")
 include("compose.jl")
 
 end

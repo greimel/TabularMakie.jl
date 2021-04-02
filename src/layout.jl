@@ -1,4 +1,4 @@
-function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, groups, styles, axis_attr)
+function grouped_plot_layout(P, figpos, df, args, layout_vars, group_dict, style_dict, kws, groups, styles, axis_attr)
 	@unpack grp_x, grp_y, grp_wrap = layout_vars
 	@unpack linkxaxes, linkyaxes, linkzcolor = layout_vars
 	
@@ -12,14 +12,13 @@ function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_di
 		I = ceil(Int, N / J)
 	end
 
-	axs = [Axis(fig; axis_attr...) for i in 1:I, j in 1:J]
+	axs = [Axis(figpos[i,j]; axis_attr...) for i in 1:I, j in 1:J]
 	for i in 1:I, j in 1:J
 		ax = axs[i,j]
 		if (i-1) * J + j > N
 			hidespines!(ax)
 			hidedecorations!(ax)
 		end
-		fig[1,1][i, j] = ax
 	end
 			
 	grp = filter(!isnothing, collect((; grp_x, grp_y, grp_wrap)))
@@ -53,24 +52,24 @@ function grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_di
 			padding = (3f0, 3f0, 3f0, 3f0)
 		# Add labels for faceting
 		if !isnothing(grp_wrap) 
-			fig[1,1][i, j, Top()] = Box(fig, color=:lightgray)
-			fig[1,1][i, j, Top()] = Label(fig, string(wrapkey); padding)
+			Box(  figpos[i, j, Top()], color=:lightgray)
+			Label(figpos[i, j, Top()], string(wrapkey); padding)
 		end
 		if !isnothing(grp_x) && i == 1 
-			fig[1,1][1, j, Top()] = Box(fig, color=:lightgray)
-			fig[1,1][1, j, Top()] = Label(fig, string(xkey); padding)
+			Box(  figpos[1, j, Top()], color=:lightgray)
+			Label(figpos[1, j, Top()], string(xkey); padding)
 		end
 		if !isnothing(grp_y) && j == 1 
-	    	fig[1,1][i, 1, Right()] = Box(fig, color=:lightgray)
-			fig[1,1][i, 1, Right()] = Label(fig, string(ykey); padding, rotation = -pi/2)
+	    	Box(  figpos[i, 1, Right()], color=:lightgray)
+			Label(figpos[i, 1, Right()], string(ykey); padding, rotation = -pi/2)
 		end
 	end
 		(; plt)#, color=:red)
 	end	
 	
 	# spanned labels
-	span_label(:x, var_lab(args[1]), axs, fig[1,1])
-	span_label(:y, var_lab(args[2]), axs, fig[1,1])
+	span_label(:x, var_lab(args[1]), axs, figpos)
+	span_label(:y, var_lab(args[2]), axs, figpos)
 
 	# Link axes
 	linkyaxes && linkyaxes!(axs...)

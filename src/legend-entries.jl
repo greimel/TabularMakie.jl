@@ -1,16 +1,13 @@
 from_default_theme(attr) = AbstractPlotting.current_default_theme()[attr]
 
-# ╔═╡ 8d939c4a-54de-11eb-1fe4-c5d87f87f62c
 from_default_theme(:palette)
 
-# ╔═╡ 22c9a76c-5423-11eb-0d0d-51d759cdc69a
 line_element(; color     = :black, #default_theme(:color),
 			   linestyle = nothing,
 			   linewidth = 1.5,
 			   kwargs...) = 
 		LineElement(; color, linestyle, linewidth, kwargs...)
 
-# ╔═╡ c3a39502-541f-11eb-2e05-73ed7d8aa794
 marker_element(; color       = from_default_theme(:color),
 		        marker       = from_default_theme(:marker),
 			    strokecolor  = :black,
@@ -18,22 +15,17 @@ marker_element(; color       = from_default_theme(:color),
 		        kwargs...) =
 		MarkerElement( ; color, marker, strokecolor, markerpoints, kwargs...)
 
-# ╔═╡ 1f7748c6-54eb-11eb-019f-95fd872aabff
 poly_element(; color = from_default_thme(:color),
 	 		   strokecolor = :transparent,
 			   kwargs...) = 
 		PolyElement(; color, strokecolor, kwargs...)
 
-# ╔═╡ 1d447dba-5428-11eb-3456-d57f302600b2
 legend_element(::Type{Scatter}; kwargs...) = marker_element(; kwargs...)
 
-# ╔═╡ 36454e68-5428-11eb-2a12-d37b6e51a601
 legend_element(::Type{Lines}; kwargs...) = line_element(; kwargs...)
 
-# ╔═╡ 8756acbe-54ea-11eb-333d-4155479d1ec7
 legend_element(::Type{BarPlot}; linewidth = 0, strokecolor=:green, kwargs...) = poly_element(; linewidth, kwargs...)
 
-# ╔═╡ c5e926f6-5429-11eb-040c-4fcb7089b1b2
 function legend_discrete(P, attribute, groups, title)
 	
 	elements = [legend_element(P; attribute => g[2]) for g in groups]
@@ -42,7 +34,6 @@ function legend_discrete(P, attribute, groups, title)
 	(; elements, labels, title)
 end
 
-# ╔═╡ da9453be-5429-11eb-2984-afc6b4eefaec
 function legend_continuous(P, attribute, extrema, title, n_ticks=4)
 	   	
 	ticks = MakieLayout.locateticks(extrema..., n_ticks)
@@ -52,8 +43,7 @@ function legend_continuous(P, attribute, extrema, title, n_ticks=4)
 	(; elements, labels, title)
 end
 
-# ╔═╡ af47ed28-542a-11eb-16d5-7d28e5b508cb
-function legend(P, fig, groups, styles, group_dict, style_dict)
+function legend(P, groups, styles, group_dict, style_dict0)
 	groups_ = collect(keys(group_dict))
 
 	legends_grp = length(groups_) > 0 ? map(groups_) do k
@@ -63,12 +53,12 @@ function legend(P, fig, groups, styles, group_dict, style_dict)
 		legend_discrete(P, k, pairs, var_lab(groups[k]))
 	end : nothing
 	
+	style_dict = deepcopy(style_dict0)
 	# special case colorbar
 	col_extr = pop!(style_dict, :color, nothing)
 	if !isnothing(col_extr)
-		cb = Colorbar(fig, limits=col_extr, label = var_lab(styles[:color]))
-		cb.width = 30
-		cb.height = Relative(0.7)
+		cb = (limits = col_extr, title = var_lab(styles[:color]))
+		#, width = 30, height = Relative(0.7)
 	else	
 		cb = nothing
 	end
@@ -94,7 +84,7 @@ function legend(P, fig, groups, styles, group_dict, style_dict)
 	
 	if length(legends) > 0
 		legends = DataFrame(legends)
-		leg = Legend(fig, legends.elements, legends.labels, legends.title)
+		leg = (legends.elements, legends.labels, legends.title)
 	else
 		leg = nothing
 	end
@@ -114,7 +104,6 @@ function create_entrygroups(contents::AbstractArray,
     entrygroups = Vector{EntryGroup}([(title, entries)])
 end
 
-# ╔═╡ f5977bb8-53fd-11eb-1ac7-8ba88cda98c7
 function create_entrygroups(contentgroups::AbstractArray{<:AbstractArray},
     labelgroups::AbstractArray{<:AbstractArray},
     titles::AbstractArray{<:Optional{String}})

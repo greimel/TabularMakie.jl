@@ -1,5 +1,6 @@
 function tplot(P, df, args...;
 			   axis_attr = (;),
+               legend_attr = (;),               
 			   attr_var_pairs...)
 
 	fig = Figure()
@@ -24,27 +25,22 @@ function tplot(P, df, args...;
 	
 	group_dict = build_group_dict(df, group_pairs)
 	style_dict = build_style_dict(df, style_pairs)
-	
-	# 2a. Plot
-	
-	# 2b. Layout
-	grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs, axis_attr)
-	
-	# 3. Legend
-	leg, cb = nothing, nothing
-	
-	@unpack leg, cb = legend(P, fig, group_pairs, style_pairs, group_dict, style_dict)
-	
-	# 4. Compose
-	i = 1
-	if !isnothing(leg)
-		fig[1,2][1,i] = leg
-		i = i + 1
-	end
-	if !isnothing(cb)
-		fig[1,2][1,i] = cb
-	end
 
+	# 2. Legend	and Colorbar
+	@unpack leg, cb = legend(P, group_pairs, style_pairs, group_dict, style_dict)
+
+	# 3. Placement
+	has_legend   = !isnothing(leg)
+	has_colorbar = !isnothing(cb)
+		
+	legend_attr, positions = positions_legend_attributes(fig, has_legend, has_colorbar, legend_attr)
+	add_legend_and_colorbar(fig, leg, cb, legend_attr, positions)
+
+	# 4. Plot the collection of axes
+	@unpack ax_pos = positions
+	grouped_plot_layout(P, ax_pos, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs, axis_attr)
+	
+	# 5. Title
 	if !isnothing(title)
 		Label(fig[0,:], title, tellwidth = false, tellheight = true)
 	end
@@ -52,7 +48,6 @@ function tplot(P, df, args...;
 	(; fig, leg, cb)
 end
 
-# ╔═╡ 703dc85c-54f5-11eb-0060-7ff7872f6834
 function lplot(args...; kwargs...)
 	@unpack fig = tplot(args...; kwargs...)
 	fig
