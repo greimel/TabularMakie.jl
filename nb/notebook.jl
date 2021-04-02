@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.12.21
+# v0.14.0
 
 using Markdown
 using InteractiveUtils
@@ -8,7 +8,7 @@ using InteractiveUtils
 begin
 	using Pkg
 	Pkg.activate(temp = true)
-	Pkg.add(PackageSpec(name = "DataAPI", version = "1.4"))
+	Pkg.add(PackageSpec(name = "DataAPI", version = "1.6"))
 	Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "groupedbar"))
 	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays"])
 	Pkg.add("PlutoUI")
@@ -65,7 +65,10 @@ let
 	df = DataFrame(
 		x = 1:10, lo = rand(10), up = 5 .+ rand(10)
 	)
-	lplot(Band, df, :x, :lo => "nice y label", :up)
+	lplot(Band, df, :x, :lo => "nice y label", :up,
+		  title = "Some nice title",
+		  axis_attr = (xticklabelrotation = 0.5, )
+	)
 end
 
 # ╔═╡ 69854f4e-6952-11eb-28c5-6dcf989a98f4
@@ -119,7 +122,18 @@ ts_df = let
 end
 
 # ╔═╡ 45624846-6950-11eb-1d56-35b025fbbaa4
-fig = lplot(Lines, ts_df, :t, :v; color = :g_co, layout_x = :g_la, linestyle = :g_ls, linewidth = 2)
+lplot(Lines, ts_df,
+		:t,
+		:v;
+		color = :g_co,
+		layout_x = :g_la,
+		linestyle = :g_ls,
+		linewidth = 2,
+		#legend_attr = (titleposition = :top,)
+)
+
+# ╔═╡ 220b673c-9304-11eb-0393-55e82f833b60
+fig = lplot(Lines, ts_df, :t, :v; color = :s_co, layout_y = :g_co, group = :grp )
 
 # ╔═╡ 47184b9e-68ca-11eb-2595-3b8b241a2b9f
 cs_df = let
@@ -138,24 +152,36 @@ cs_df = let
 end
 
 # ╔═╡ 831aa510-6947-11eb-3694-21c2defdbaef
-out0 = lplot(Scatter, cs_df,
+lplot(Scatter, cs_df,
 	:xxx,
 	:yyy;
 	color = :s_c,
 	marker = :g_m,
 	markersize = :s_m,
 	layout_wrap = :g_lx,
-	
+	legend_attr = (position = :top, titleposition = :top)
 )
 
 # ╔═╡ 4e1fd39c-68cc-11eb-3c84-b3127a09c2a2
-out = lplot(Scatter, cs_df,
+lplot(Scatter, cs_df,
 	:xxx => minus1,
 	:yyy => ByRow(x -> x + 1) => "the y plus one";
 	color = :s_c => "hey there",
 	marker = :g_m => rec_1 => "bla",
 	markersize = :s_m => :tada,
-	layout_wrap = :g_lx => rec_2	
+	layout_wrap = :g_lx => rec_2,
+	legend_attr = (titleposition = :top,)
+  )
+
+# ╔═╡ 69ff7b02-9302-11eb-38d7-6d020c3bc20d
+lplot(Scatter, cs_df,
+	:xxx => minus1,
+	:yyy => ByRow(x -> x + 1) => "the y plus one";
+	color = :s_c => "hey there",
+	marker = :g_m => rec_1 => "bla",
+	#markersize = :s_m => :tada,
+	layout_wrap = :g_lx => rec_2,
+	legend_attr = (titleposition = :top, position = :right)
   )
 
 # ╔═╡ 5c5a8fe8-76bd-11eb-234c-09a056b0c256
@@ -178,7 +204,7 @@ end
 lplot(Scatter, cat_df, :cat0, :y)
 
 # ╔═╡ 8030ddc6-76b5-11eb-030d-b79fd57b5a6f
-lplot(Scatter, cat_df, :cat, :y)
+lplot(Scatter, cat_df, :cat => "x in the right order", :y)
 
 # ╔═╡ 96075d2a-76bd-11eb-2d9d-31333dd2f2fd
 bar_df = let
@@ -187,14 +213,15 @@ bar_df = let
 	n_stack = 5
 	n = n_dodge * n_x * n_stack
 	
-	grp_dodge = ["dodge $i" for i in 1:n_dodge] |> categorical
-	grp_x     = ["x $i"     for i in 1: n_x] |> categorical
-	grp_stack = ["stack $i" for i in 1:n_stack] |> categorical
+	grp_dodge0 = ["dodge $i" for i in 1:n_dodge]
+	grp_x0     = ["x $i"     for i in 1: n_x]
+	grp_stack0 = ["stack $i" for i in 1:n_stack]
 	
-	df = Iterators.product(grp_dodge, grp_x, grp_stack) |> DataFrame
-	cols = [:grp_dodge, :grp_x, :grp_stack]
-	rename!(df, cols)
-	transform!(df, cols .=> categorical .=> cols)
+	df = Iterators.product(grp_dodge0, grp_x0, grp_stack0) |> DataFrame
+	cols0 = [:grp_dodge0, :grp_x0, :grp_stack0]
+	cols  = [:grp_dodge,  :grp_x,  :grp_stack]
+	rename!(df, cols0)
+	transform!(df, cols0 .=> categorical .=> cols)
 	
 	cols_i = cols .|> string .|> x -> x[5:end]  .|> x -> x * "_i"
 	transform!(df, cols .=> (x -> Int.(x.refs)) .=> cols_i)
@@ -216,8 +243,9 @@ TableOfContents()
 
 # ╔═╡ Cell order:
 # ╟─6588b3e6-6941-11eb-198a-15e00c20cb5a
-# ╟─831aa510-6947-11eb-3694-21c2defdbaef
+# ╠═831aa510-6947-11eb-3694-21c2defdbaef
 # ╠═45624846-6950-11eb-1d56-35b025fbbaa4
+# ╠═220b673c-9304-11eb-0393-55e82f833b60
 # ╟─904fef48-76be-11eb-26b4-fb433306bc3f
 # ╠═c5777782-8bb7-11eb-2f40-3f2ca4012da6
 # ╠═8030ddc6-76b5-11eb-030d-b79fd57b5a6f
@@ -229,6 +257,7 @@ TableOfContents()
 # ╠═5281fcf6-6946-11eb-34b9-79d05e3ec288
 # ╠═1a656cf2-694a-11eb-1c4f-edf4c99c3edc
 # ╠═4e1fd39c-68cc-11eb-3c84-b3127a09c2a2
+# ╠═69ff7b02-9302-11eb-38d7-6d020c3bc20d
 # ╟─2fec9ae6-76c4-11eb-35cd-c5c79181ed02
 # ╠═365c077a-76c4-11eb-14d1-47bcb751896c
 # ╟─69854f4e-6952-11eb-28c5-6dcf989a98f4
