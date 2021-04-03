@@ -10,7 +10,7 @@ begin
 	Pkg.activate(temp = true)
 	Pkg.add(PackageSpec(name = "DataAPI", version = "1.6"))
 	Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "groupedbar"))
-	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays"])
+	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays", "UnPack"])
 	Pkg.add("PlutoUI")
 	
 	Pkg.develop("TabularMakie")
@@ -18,6 +18,7 @@ begin
 	using Revise, CairoMakie, DataFrames, CategoricalArrays, PooledArrays
 	using DataAPI: DataAPI, refarray
 	using TabularMakie
+	using UnPack
 	using PlutoUI
 	
 	Base.show(io::IO, ::MIME"text/html", x::CategoricalArrays.CategoricalValue) = print(io, get(x))
@@ -25,6 +26,16 @@ end
 
 # ╔═╡ b3ba674a-76bd-11eb-3a9a-f3583c9b7d94
 using Random: shuffle
+
+# ╔═╡ 77df0d1a-278a-449c-ac55-30991044afc2
+md"""
+# Pipeline
+"""
+
+# ╔═╡ 37ebd83c-319c-462c-8eb1-859f81b9eae0
+import TabularMakie: 
+	specification, draw_axis!, add_legend,
+	has_legend_or_colorbar, outer_legend_position
 
 # ╔═╡ 6588b3e6-6941-11eb-198a-15e00c20cb5a
 md"""
@@ -129,7 +140,7 @@ lplot(Lines, ts_df,
 		layout_x = :g_la,
 		linestyle = :g_ls,
 		linewidth = 2,
-		#legend_attr = (titleposition = :top,)
+		legend_attr = (position = :left,)
 )
 
 # ╔═╡ 220b673c-9304-11eb-0393-55e82f833b60
@@ -149,6 +160,47 @@ cs_df = let
 
 	dummy_df[:,:s_c] = 2 .* rand(N) .+ refarray(dummy_df.g_lx)
 	dummy_df
+end
+
+# ╔═╡ 987bde45-6e35-44e9-8724-5cdbf195fe9b
+let
+	spec = specification(Scatter, cs_df,
+		:xxx,
+		:yyy;
+		markersize = :s_m,
+		layout_wrap = :g_lx
+	)
+
+	fig = Figure()
+	
+	legend_position = :top
+	@unpack ax_pos, legs_pos = outer_legend_position(fig, has_legend_or_colorbar(spec), legend_position)
+		
+	draw_axis!(ax_pos, spec)
+	
+	add_legend(legs_pos, spec; legend_position)
+	
+	fig
+end
+
+# ╔═╡ e929fe20-775f-49f0-9a42-be0954771ea2
+let
+	spec = specification(Scatter, cs_df,
+		:xxx,
+		:yyy;
+		markersize = :s_m,
+		layout_wrap = :g_lx
+	)
+
+	fig = Figure()
+	
+	ax_pos, legs_pos, orientation = fig[1,1], fig[1,2], :vertical
+	
+	draw_axis!(ax_pos, spec)
+	
+	add_legend(legs_pos, spec; orientation)
+	
+	fig
 end
 
 # ╔═╡ 831aa510-6947-11eb-3694-21c2defdbaef
@@ -183,9 +235,6 @@ lplot(Scatter, cs_df,
 	layout_wrap = :g_lx => rec_2,
 	legend_attr = (titleposition = :top, position = :right)
   )
-
-# ╔═╡ 5c5a8fe8-76bd-11eb-234c-09a056b0c256
-
 
 # ╔═╡ 07ce7300-76b5-11eb-3132-2bea7add28e1
 cat_df = let
@@ -232,6 +281,32 @@ bar_df = let
 	df
 end
 
+# ╔═╡ 15490b34-23ec-4ae5-b473-c4c1b7f49e07
+begin
+	spec = specification(BarPlot, bar_df,
+		:grp_x => "nice name for x",
+		:y,
+		stack = :grp_stack,
+		dodge = :grp_dodge,
+		color = :grp_stack => "nice name for color"
+	)
+	
+	spec0 = specification(Scatter, cs_df,
+		:xxx,
+		:yyy;
+		markersize = :s_m,
+		layout_wrap = :g_lx
+	)
+	
+	nothing
+end
+
+# ╔═╡ d7168aff-2835-447c-9e57-1609ed4ae71e
+spec0.style_pairs
+
+# ╔═╡ 1afe791f-eee2-4b03-a2b0-474ddd2044c1
+spec0.style_dict
+
 # ╔═╡ c92db4ce-76bd-11eb-0d6f-d55846f72e5b
 lplot(BarPlot, bar_df, :grp_x => "nice name for x", :y, stack = :grp_stack, dodge = :grp_dodge, color = :grp_stack)
 
@@ -242,6 +317,13 @@ lplot(BarPlot, filter(:grp_stack => ==("stack 1"), bar_df), :grp_x, :y => ByRow(
 TableOfContents()
 
 # ╔═╡ Cell order:
+# ╟─77df0d1a-278a-449c-ac55-30991044afc2
+# ╠═37ebd83c-319c-462c-8eb1-859f81b9eae0
+# ╠═15490b34-23ec-4ae5-b473-c4c1b7f49e07
+# ╠═d7168aff-2835-447c-9e57-1609ed4ae71e
+# ╠═1afe791f-eee2-4b03-a2b0-474ddd2044c1
+# ╠═987bde45-6e35-44e9-8724-5cdbf195fe9b
+# ╠═e929fe20-775f-49f0-9a42-be0954771ea2
 # ╟─6588b3e6-6941-11eb-198a-15e00c20cb5a
 # ╠═831aa510-6947-11eb-3694-21c2defdbaef
 # ╠═45624846-6950-11eb-1d56-35b025fbbaa4
@@ -266,7 +348,6 @@ TableOfContents()
 # ╟─9bee489c-694e-11eb-3d8f-735277e3db10
 # ╠═346fba94-6950-11eb-0c18-43cb90d135b8
 # ╠═47184b9e-68ca-11eb-2595-3b8b241a2b9f
-# ╠═5c5a8fe8-76bd-11eb-234c-09a056b0c256
 # ╠═07ce7300-76b5-11eb-3132-2bea7add28e1
 # ╠═b3ba674a-76bd-11eb-3a9a-f3583c9b7d94
 # ╠═96075d2a-76bd-11eb-2d9d-31333dd2f2fd
