@@ -1,4 +1,9 @@
-function grouped_plot_layout(P, figpos, df, args, layout_vars, group_dict, style_dict, kws, groups, styles, axis_attr)
+function draw_axis!(ax_pos, specification, axis_attr = (;))
+	@unpack P, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs = specification
+	draw_axis!(P, ax_pos, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs, axis_attr)
+end
+
+function draw_axis!(P, figpos, df, args, layout_vars, group_dict, style_dict, kws, groups, styles, axis_attr)
 	@unpack grp_x, grp_y, grp_wrap = layout_vars
 	@unpack linkxaxes, linkyaxes, linkzcolor = layout_vars
 	
@@ -23,7 +28,6 @@ function grouped_plot_layout(P, figpos, df, args, layout_vars, group_dict, style
 			
 	grp = filter(!isnothing, collect((; grp_x, grp_y, grp_wrap)))
 	
-
 	out = combine(groupby(df, var_key.(grp))) do groupdf
 		# Compute group key and index for layouting variables
 		if !isnothing(grp_y)

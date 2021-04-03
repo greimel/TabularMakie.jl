@@ -1,51 +1,43 @@
 function tplot(P, df, args...;
 			   axis_attr = (;),
-               legend_attr = (;),               
+			   legend_attr = (;),
+			   title = nothing,               
 			   attr_var_pairs...)
-
+			   
 	fig = Figure()
 	
-	# 1. Grouping	
-	dict = Dict(attr_var_pairs...)
+   # 1. Preparations
+   spec = specification(P, df, args, attr_var_pairs)
 
-	layout_vars = let
-		grp_x    = pop!(dict, :layout_x, nothing)
-		grp_y    = pop!(dict, :layout_y, nothing)
-		grp_wrap = pop!(dict, :layout_wrap, nothing) 
-		linkxaxes  = pop!(dict, :linkxaxes, true)
-		linkyaxes  = pop!(dict, :linkyaxes, true)
-		linkzcolor = pop!(dict, :linkzcolor, true)
-	
-		(; grp_x, grp_y, grp_wrap, linkxaxes, linkyaxes, linkzcolor)
+   # 2. Figure out positions of axis and legend
+	if !haskey(legend_attr, :position)
+		legend_attr = (; position = :top, legend_attr...)
 	end
-	
-	title = pop!(dict, :title, nothing)
-	
-	@unpack group_pairs, style_pairs, kws = group_style_other(df, dict)
-	
-	group_dict = build_group_dict(df, group_pairs)
-	style_dict = build_style_dict(df, style_pairs)
 
-	# 2. Legend	and Colorbar
-	@unpack leg, cb = legend(P, group_pairs, style_pairs, group_dict, style_dict)
+	legend_position = legend_attr.position
 
-	# 3. Placement
-	has_legend   = !isnothing(leg)
-	has_colorbar = !isnothing(cb)
-		
-	legend_attr, positions = positions_legend_attributes(fig, has_legend, has_colorbar, legend_attr)
-	add_legend_and_colorbar(fig, leg, cb, legend_attr, positions)
+	@unpack ax_pos, legs_pos = 
+			outer_legend_position(fig, has_legend_or_colorbar(spec), legend_position)
 
-	# 4. Plot the collection of axes
-	@unpack ax_pos = positions
-	grouped_plot_layout(P, ax_pos, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs, axis_attr)
-	
-	# 5. Title
+	draw!(ax_pos, legs_pos, spec, attr_var_pairs; legend_attr, axis_attr)
+
+	# 5. Add Title
 	if !isnothing(title)
 		Label(fig[0,:], title, tellwidth = false, tellheight = true)
 	end
 
-	(; fig, leg, cb)
+	(; fig)
+end
+
+function draw!(ax_pos, legs_pos, spec, attr_var_pairs; legend_attr = (;), axis_attr = (;))
+
+	# 3. Draw Axis/Axes
+	draw_axis!(ax_pos, spec, axis_attr)
+	
+	# 4. Draw Legend/Colorbar
+	add_legend(legs_pos, spec; legend_attr...)
+	
+	nothing
 end
 
 function lplot(args...; kwargs...)

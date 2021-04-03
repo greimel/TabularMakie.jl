@@ -43,7 +43,13 @@ function legend_continuous(P, attribute, extrema, title, n_ticks=4)
 	(; elements, labels, title)
 end
 
-function legend(P, groups, styles, group_dict, style_dict0)
+function draw_legend!(leg_pos, specification, legend_attr)
+	@unpack P, group_pairs, style_pairs, group_dict, style_dict = specification
+	
+	leg, cb = draw_legend!(P, group_pairs, style_pairs, group_dict, style_dict)
+end
+
+function draw_legend!(P, groups, styles, group_dict, style_dict0)
 	groups_ = collect(keys(group_dict))
 
 	legends_grp = length(groups_) > 0 ? map(groups_) do k
