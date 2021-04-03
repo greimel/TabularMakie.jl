@@ -1,40 +1,45 @@
-function positions_legend_attributes(fig, has_legend, has_colorbar, legend_attr)
+function add_legend(legs_pos, spec; legend_attr...)
+	leg, cb = draw_legend!(nothing, spec, nothing)
+
+	has_legend   = !isnothing(leg) 
+	has_colorbar = !isnothing(cb)
+	
+	legend_attr = legend_attributes(legend_attr, has_colorbar)
+	@unpack orientation = legend_attr
+	
+	positions = inner_legend_positions(has_legend, has_colorbar, orientation, legs_pos)
+	add_legend_and_colorbar(leg, cb, legend_attr, positions)	
+end	
+
+function legend_attributes(legend_attr, has_colorbar)
     legend_attr = Dict(pairs(legend_attr))
     
     legend_position = pop!(legend_attr, :position, :top)
 	orientation     = pop!(legend_attr, :orientation, default_orientation(legend_position))
 	titleposition   = pop!(legend_attr, :titleposition, default_titleposition(orientation))
 	nbanks          = pop!(legend_attr, :nbanks, default_nbanks(orientation, has_colorbar))
-	framevisible   = pop!(legend_attr, :framevisible, false)
-	titlevisible   = pop!(legend_attr, :titlevisible, true)
+	framevisible    = pop!(legend_attr, :framevisible, false)
+	titlevisible    = pop!(legend_attr, :titlevisible, true)
 
     attr = (; legend_position, orientation, titleposition, nbanks, framevisible, titlevisible)
-    
-    ax_pos, legpos, cbpos = positions(fig, has_legend, has_colorbar, orientation, legend_position)
-
-    pos = (; ax_pos, legpos, cbpos)
-
-    (; attr, positions = pos)
 end
 
-function add_legend_and_colorbar(fig, leg_contents, cb_contents, attr, positions)
+function add_legend_and_colorbar(leg_contents, cb_contents, attr, positions)
     has_colorbar = !isnothing(cb_contents)
     has_legend   = !isnothing(leg_contents)
 
-    @unpack legpos, cbpos = positions
+    @unpack leg_pos, cb_pos = positions
     @unpack legend_position, orientation, titleposition, nbanks, titlevisible = attr
 
     if has_legend
         leg_attributes = legend_attributes(orientation, has_colorbar, titleposition, nbanks)
-        add_legend(legpos, leg_contents, leg_attributes)	
+        add_legend(leg_pos, leg_contents, leg_attributes)	
     end
 
     if has_colorbar
         cb_attributes = colorbar_attributes(orientation)
-        add_colorbar(cb_contents, cbpos, titleposition, titlevisible, has_legend, cb_attributes)
+        add_colorbar(cb_contents, cb_pos, titleposition, titlevisible, has_legend, cb_attributes)
     end
-
-    fig
 end
 
 #leg_attr = (; orientation, titlevisible, framevisible, titleposition, nbanks, legend_attr...)
@@ -116,10 +121,10 @@ end
 # ------- H E L P E R S -------
 # -----------------------------
 
-function positions(fig, has_legend, has_colorbar, orientation, legend_position)
-	vertical = orientation == :vertical
-	
-	if has_legend || has_colorbar
+has_legend_or_colorbar(spec) = (length(spec.group_dict) > 0) || (length(spec.style_dict) > 0)
+
+function outer_legend_position(fig, has_legend_or_colorbar, legend_position)
+	if has_legend_or_colorbar
 		if legend_position == :bottom
 			ax_pos 	 = fig[1,1] 
 			legs_pos = fig[2,1]
@@ -133,12 +138,19 @@ function positions(fig, has_legend, has_colorbar, orientation, legend_position)
 			ax_pos   = fig[1,2]
 			legs_pos = fig[1,1]
 		end
-		i = 1
 	else
-		ax_pos = fig[1,1]
+        ax_pos = fig[1,1]
+        legs_pos = nothing
 	end
 	
-	if has_legend
+	(; ax_pos,  legs_pos)
+end
+
+function inner_legend_positions(has_legend, has_colorbar, orientation, legs_pos)
+    vertical = orientation == :vertical
+    i = 1
+
+    if has_legend
 		leg_pos = vertical ? legs_pos[i,1] : legs_pos[1,i]
 		i += 1
 	else
@@ -148,10 +160,10 @@ function positions(fig, has_legend, has_colorbar, orientation, legend_position)
 		cb_pos = vertical ? legs_pos[i,1] : legs_pos[1,i]
 	else
 		cb_pos = nothing
-	end
-	
-	(; ax_pos, leg_pos, cb_pos)
+    end
+    (; leg_pos, cb_pos)
 end
+
 
 default_orientation(legend_position) = legend_position in [:top, :bottom] ? :horizontal : :vertical
 
