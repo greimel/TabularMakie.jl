@@ -1,48 +1,3 @@
-from_default_theme(attr) = AbstractPlotting.current_default_theme()[attr]
-
-from_default_theme(:palette)
-
-line_element(; color     = :black, #default_theme(:color),
-			   linestyle = nothing,
-			   linewidth = 1.5,
-			   kwargs...) = 
-		LineElement(; color, linestyle, linewidth, kwargs...)
-
-marker_element(; color       = from_default_theme(:color),
-		        marker       = from_default_theme(:marker),
-			    strokecolor  = :black,
-			    markerpoints = [Point2f0(0.5, 0.5)],
-		        kwargs...) =
-		MarkerElement( ; color, marker, strokecolor, markerpoints, kwargs...)
-
-poly_element(; color = from_default_thme(:color),
-	 		   strokecolor = :transparent,
-			   kwargs...) = 
-		PolyElement(; color, strokecolor, kwargs...)
-
-legend_element(::Type{Scatter}; kwargs...) = marker_element(; kwargs...)
-
-legend_element(::Type{Lines}; kwargs...) = line_element(; kwargs...)
-
-legend_element(::Type{BarPlot}; linewidth = 0, strokecolor=:green, kwargs...) = poly_element(; linewidth, kwargs...)
-
-function legend_discrete(P, attribute, groups, title)
-	
-	elements = [legend_element(P; attribute => g[2]) for g in groups]
-	labels = first.(groups)
-	
-	(; elements, labels, title)
-end
-
-function legend_continuous(P, attribute, extrema, title, n_ticks=4)
-	   	
-	ticks = MakieLayout.locateticks(extrema..., n_ticks)
-	elements = [legend_element(P; attribute => s) for s in ticks]
-	labels = string.(ticks)
-	
-	(; elements, labels, title)
-end
-
 function draw_legend!(leg_pos, specification, legend_attr)
 	@unpack P, group_pairs, style_pairs, group_dict, style_dict = specification
 	
@@ -97,6 +52,51 @@ function draw_legend!(P, groups, styles, group_dict, style_dict0)
 	
 	(; leg, cb)
 end
+
+function legend_discrete(P, attribute, groups, title)
+	
+	elements = [legend_element(P; attribute => g[2]) for g in groups]
+	labels = first.(groups)
+	
+	(; elements, labels, title)
+end
+
+function legend_continuous(P, attribute, extrema, title, n_ticks=4)
+	   	
+	ticks = MakieLayout.locateticks(extrema..., n_ticks)
+	elements = [legend_element(P; attribute => s) for s in ticks]
+	labels = string.(ticks)
+	
+	(; elements, labels, title)
+end
+
+from_default_theme(attr) = AbstractPlotting.current_default_theme()[attr]
+
+from_default_theme(:palette)
+
+line_element(; color     = :black, #default_theme(:color),
+			   linestyle = nothing,
+			   linewidth = 1.5,
+			   kwargs...) = 
+		LineElement(; color, linestyle, linewidth, kwargs...)
+
+marker_element(; color       = from_default_theme(:color),
+		        marker       = from_default_theme(:marker),
+			    strokecolor  = :black,
+			    markerpoints = [Point2f0(0.5, 0.5)],
+		        kwargs...) =
+		MarkerElement( ; color, marker, strokecolor, markerpoints, kwargs...)
+
+poly_element(; color = from_default_thme(:color),
+	 		   strokecolor = :transparent,
+			   kwargs...) = 
+		PolyElement(; color, strokecolor, kwargs...)
+
+legend_element(::Type{Scatter}; kwargs...) = marker_element(; kwargs...)
+
+legend_element(::Type{Lines}; kwargs...) = line_element(; kwargs...)
+
+legend_element(::Type{BarPlot}; linewidth = 0, strokecolor=:green, kwargs...) = poly_element(; linewidth, kwargs...)
 
 function create_entrygroups(contents::AbstractArray,
     labels::AbstractArray{String},
