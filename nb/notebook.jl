@@ -10,7 +10,7 @@ begin
 	Pkg.activate(temp = true)
 	Pkg.add(PackageSpec(name = "DataAPI", version = "1.6"))
 	#Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "groupedbar"))
-	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays", "UnPack"])
+	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays", "UnPack", "Random"])
 	Pkg.add("PlutoUI")
 	
 	Pkg.develop("TabularMakie")
