@@ -9,7 +9,7 @@ begin
 	using Pkg
 	Pkg.activate(temp = true)
 	Pkg.add(PackageSpec(name = "DataAPI", version = "1.6"))
-	Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "groupedbar"))
+	#Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "groupedbar"))
 	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays", "UnPack"])
 	Pkg.add("PlutoUI")
 	
@@ -240,6 +240,8 @@ lplot(Scatter, cs_df,
 cat_df = let
 	N = 100
 	cat0 = rand(["Low", "Mid", "High"], N)
+	cat0[1:3] .= ["Mid", "High", "Low"]
+	
 	cat  = categorical(cat0, levels = ["Low", "Mid", "High"])
 	y    = rand(N)
 	
