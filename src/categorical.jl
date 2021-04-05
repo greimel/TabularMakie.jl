@@ -16,12 +16,12 @@ categorical_trait(::AbstractVector{<: Number}) = Continuous()
 
 categorical_labels(xs) = categorical_labels(categorical_trait(xs), xs)
 categorical_labels(::Categorical, xs) = unique(xs)
-categorical_labels(::Continuous,  _)  = automatic # we let them be automatic
+categorical_labels(::Continuous,  _)  = Automatic() # we let them be automatic
 categorical_labels(::HasRefPool,  xs) = DataAPI.levels(xs) # could also use values(DataAPI.refpool(xs))
 
 categorical_range(xs) = categorical_range(categorical_trait(xs), xs)
 categorical_range(::Categorical, xs) = 1:length(categorical_labels(xs))
-categorical_range(::Continuous,  _)  = automatic # we let them be automatic
+categorical_range(::Continuous,  _)  = Automatic() # we let them be automatic
 categorical_range(::HasRefPool,  xs) = keys(DataAPI.refpool(xs))
 
 categorical_position(x, xs) = categorical_position(categorical_trait(xs), x, xs)
