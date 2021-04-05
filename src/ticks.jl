@@ -12,8 +12,8 @@ function categorical_ticks!(ax, x, y)
 end
 
 function categorical_ticks(var)
-	ticks  = categorical_range(var)  # internal function from AbstractPlotting
-	labels = categorical_labels(var) # internal function from AbstractPlotting
+	ticks  = categorical_range(var)
+	labels = categorical_labels(var)
 
 	if ticks isa Automatic
 		nothing
