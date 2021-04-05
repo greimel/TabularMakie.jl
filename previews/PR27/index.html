@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · TabularMakie.jl</title><link rel="canonical" href="https://greimel.github.io/TabularMakie.jl/"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TabularMakie.jl</span></div><form class="docs-search" action="search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Home</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Home</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Home</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/greimel/TabularMakie.jl/blob/master/docs/src/index.md#L" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><pre><code class="language-julia">using DataFrames, CategoricalArrays
+using DataAPI: refarray
+
+cs_df = let
+	N = 100
+	dummy_df = DataFrame(
+		xxx = rand(N),
+		yyy = rand(N),
+		s_m  = rand(5:13, N),
+		g_c  = rand([&quot;c 1&quot;, &quot;c 2&quot;, &quot;c 3&quot;], N) |&gt; categorical,
+		g_lx = rand([&quot;lx 1&quot;, &quot;lx 2&quot;, &quot;lx 3&quot;], N) |&gt; categorical,
+		g_m  = rand([&quot;m 1&quot;, &quot;m 2&quot;, &quot;m 3&quot;], N) |&gt; categorical
+		)
+
+	dummy_df[:,:s_c] = 2 .* rand(N) .+ refarray(dummy_df.g_lx)
+	dummy_df
+end</code></pre><pre><code class="language-julia">using DataFrames, CategoricalArrays
+using DataAPI: refarray
+
+ts_df = let
+	g_la = [&quot;lay 1&quot;, &quot;lay 2&quot;]
+	g_co = [&quot;c 1&quot;, &quot;c 2&quot;]
+	g_ls = [&quot;ls 1&quot;, &quot;ls 2&quot;, &quot;ls 3&quot;]
+
+	ts_df = DataFrame(Iterators.product(g_la, g_co, g_ls))
+
+	grps = [:g_la, :g_co, :g_ls]
+
+	rename!(ts_df, grps)
+	transform!(ts_df, grps .=&gt; categorical, renamecols = false)
+
+	transform!(ts_df, :g_co =&gt; (x -&gt; refarray(x) .+ rand.())  =&gt; :s_co)
+	transform!(ts_df, :s_co =&gt; ByRow(float) =&gt; :s_co)
+
+	ts_df[:,:grp] = 1:size(ts_df, 1) |&gt; categorical
+
+	function rw_nt(T)
+		function(i)
+			rw = cumsum(randn(T))
+
+			DataFrame([(t = t, v = v, grp = i) for (t, v) in enumerate(rw)])
+		end
+	end
+
+	T = 100
+
+	combine(groupby(ts_df, [grps; :s_co])) do sdf
+		grp = sdf.grp[1]
+
+		rw_nt(T)(grp)
+	end
+end</code></pre><h1 id="TabularMakie"><a class="docs-heading-anchor" href="#TabularMakie">TabularMakie</a><a id="TabularMakie-1"></a><a class="docs-heading-anchor-permalink" href="#TabularMakie" title="Permalink"></a></h1><p>This is how it looks.</p><pre><code class="language-">using TabularMakie, CairoMakie
+
+fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize = :s_m, layout_wrap = :g_lx)
+
+save(&quot;fig_cs1.svg&quot;, fig) # hide</code></pre><p><img src="fig_cs1.svg" alt="fig_cs1"/></p><p>We can use the DataFrames.jl minilanguage to transform columns or rename them. You have the following options.</p><ul><li><code>source_column =&gt; target_column_name</code></li><li><code>source_column =&gt; transformation</code></li><li><code>source_column =&gt; transformation =&gt; target_column_name</code></li></ul><p>This is shown in the following example.</p><pre><code class="language-">
+using CategoricalArrays: recode!
+
+rec_1(x) = recode!(x, &quot;m 1&quot; =&gt; &quot;Nice name&quot;, &quot;m 2&quot; =&gt; &quot;Other&quot;)
+rec_2(x) = recode!(x, &quot;lx 1&quot; =&gt; &quot;Panel 1&quot;)
+minus1(x) = x .- 1
+
+fig = lplot(Scatter, cs_df,
+	:xxx =&gt; minus1,
+	:yyy =&gt; ByRow(x -&gt; x + 1) =&gt; &quot;the y plus one&quot;;
+	color = :s_c =&gt; &quot;hey there&quot;,
+	marker = :g_m =&gt; rec_1 =&gt; &quot;bla&quot;,
+	markersize = :s_m =&gt; :tada,
+	layout_wrap = :g_lx =&gt; rec_2	
+  )
+
+save(&quot;fig_cs2.svg&quot;, fig) # hide</code></pre><p><img src="fig_cs2.svg" alt="fig_cs2"/></p><pre><code class="language-">using TabularMakie, CairoMakie
+
+fig = lplot(Lines, ts_df, :t, :v; color = :g_co, layout_x = :g_la, linestyle = :g_ls, linewidth = 2)
+save(&quot;fig_ts1.svg&quot;, fig) # hide</code></pre><p><img src="fig_ts1.svg" alt="fig_ts1"/></p><pre><code class="language-">using TabularMakie, CairoMakie
+
+fig = lplot(Lines, ts_df, :t, :v; color = :s_co, layout_y = :g_co, group = :grp )
+save(&quot;fig_ts2.svg&quot;, fig) # hide</code></pre><p><img src="fig_ts2.svg" alt="fig_ts2"/></p><ul><li><a href="#TabularMakie.lookup_symbols-NTuple{4, Any}"><code>TabularMakie.lookup_symbols</code></a></li></ul><article class="docstring"><header><a class="docstring-binding" id="TabularMakie.lookup_symbols-NTuple{4, Any}" href="#TabularMakie.lookup_symbols-NTuple{4, Any}"><code>TabularMakie.lookup_symbols</code></a> — <span class="docstring-category">Method</span></header><section><div><p>This function replaces group indicators (numbers, categories) by attributes that can be plotted (:solid, :red, etc...)</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/greimel/TabularMakie.jl/blob/7ce9b80240f2328cc001a6e09d5f4fa23e513d7c/src/attribute-dicts.jl#LL91">source</a></section></article></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 5 April 2021 09:23">Monday 5 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
