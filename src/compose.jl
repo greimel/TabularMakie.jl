@@ -1,46 +1,45 @@
-function tplot(P, df, args...; attr_var_pairs...)
+function tplot(P, df, args...;
+			   axis_attr = (;),
+			   legend_attr = (;),
+			   title = nothing,               
+			   attr_var_pairs...)
+			   
 	fig = Figure()
 	
-	# 1. Grouping	
-	dict = Dict(attr_var_pairs...)
+   # 1. Preparations
+   spec = specification(P, df, args, attr_var_pairs)
 
-	layout_vars = let
-		grp_x    = pop!(dict, :layout_x, nothing)
-		grp_y    = pop!(dict, :layout_y, nothing)
-		grp_wrap = pop!(dict, :layout_wrap, nothing) 
-	
-		(; grp_x, grp_y, grp_wrap)
-	end
-	
-	@unpack group_pairs, style_pairs, kws = group_style_other(df, dict)
-	
-	group_dict = build_group_dict(df, group_pairs)
-	style_dict = build_style_dict(df, style_pairs)
-	
-	# 2a. Plot
-	
-	# 2b. Layout
-	grouped_plot_layout(P, fig, df, args, layout_vars, group_dict, style_dict, kws, group_pairs, style_pairs)
-	
-	# 3. Legend
-	leg, cb = nothing, nothing
-	
-	@unpack leg, cb = legend(P, fig, group_pairs, style_pairs, group_dict, style_dict)
-	
-	# 4. Compose
-	i = 1
-	if !isnothing(leg)
-		fig[1,2][1,i] = leg
-		i = i + 1
-	end
-	if !isnothing(cb)
-		fig[1,2][1,i] = cb
+   # 2. Figure out positions of axis and legend
+	if !haskey(legend_attr, :position)
+		legend_attr = (; position = :top, legend_attr...)
 	end
 
-	(; fig, leg, cb)
+	legend_position = legend_attr.position
+
+	@unpack ax_pos, legs_pos = 
+			outer_legend_position(fig, has_legend_or_colorbar(spec), legend_position)
+
+	draw!(ax_pos, legs_pos, spec, attr_var_pairs; legend_attr, axis_attr)
+
+	# 5. Add Title
+	if !isnothing(title)
+		Label(fig[0,:], title, tellwidth = false, tellheight = true)
+	end
+
+	(; fig)
 end
 
-# ╔═╡ 703dc85c-54f5-11eb-0060-7ff7872f6834
+function draw!(ax_pos, legs_pos, spec, attr_var_pairs; legend_attr = (;), axis_attr = (;))
+
+	# 3. Draw Axis/Axes
+	draw_axis!(ax_pos, spec, axis_attr)
+	
+	# 4. Draw Legend/Colorbar
+	add_legend(legs_pos, spec; legend_attr...)
+	
+	nothing
+end
+
 function lplot(args...; kwargs...)
 	@unpack fig = tplot(args...; kwargs...)
 	fig
