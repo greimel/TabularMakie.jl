@@ -86,7 +86,7 @@ function unique_or_identity(x)
 	end
 end
 
-is_discrete(x) = !(categorical_trait(x) isa AbstractPlotting.Continuous)
+is_discrete(x) = !(categorical_trait(x) isa Continuous)
 
 "This function replaces group indicators (numbers, categories) by attributes that can be plotted (:solid, :red, etc...)"
 function lookup_symbols(df, group_pairs, style_pairs, group_dict)

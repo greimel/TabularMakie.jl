@@ -7,7 +7,11 @@ using AbstractPlotting: MakieLayout
 using AbstractPlotting.MakieLayout: Optional, LegendEntry, EntryGroup
 # import some internal functions of AbstractPlotting
 # TODO: test behavior of these functions
-using AbstractPlotting: categorical_labels, categorical_range, categorical_positions, categorical_trait, Continuous, Automatic
+
+using AbstractPlotting: Automatic
+include("categorical.jl")
+using .TmpCategorical: categorical_labels, categorical_range, categorical_positions, categorical_trait, Categorical, HasRefPool, Continuous, Automatic
+# using AbstractPlotting: categorical_labels, categorical_range, categorical_positions, categorical_trait, Continuous, Automatic
 
 using DataFrames
 using Underscores: @_
@@ -15,6 +19,7 @@ using StructArrays
 using UnPack: @unpack
 #using Statistics
 using NamedTupleTools: delete
+
 
 include("mini-language.jl")
 include("attribute-dicts.jl")
