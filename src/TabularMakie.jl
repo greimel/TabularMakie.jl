@@ -10,8 +10,7 @@ using AbstractPlotting.MakieLayout: Optional, LegendEntry, EntryGroup
 
 using AbstractPlotting: Automatic
 include("categorical.jl")
-using .TmpCategorical: categorical_labels, categorical_range, categorical_positions, categorical_trait, Categorical, HasRefPool, Continuous
-# using AbstractPlotting: categorical_labels, categorical_range, categorical_positions, categorical_trait, Continuous, Automatic
+using .CategoricalConversions: categorical_labels, categorical_range, categorical_positions, categorical_trait, Categorical, HasRefPool, Continuous
 
 using DataFrames
 using Underscores: @_
