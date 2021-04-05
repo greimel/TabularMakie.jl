@@ -3,6 +3,7 @@ module TmpCategorical
 export Continuous, HasRefPool, Categorical,
     catetorical_labels, categorical_range, categorical_trait, categorical_positions
 
+using DataAPI: DataAPI
 using AbstractPlotting: AbstractPlotting, categorical_trait, Categorical, Automatic
 
 const AP = AbstractPlotting
@@ -11,6 +12,7 @@ struct HasRefPool end
 const Continuous = AP.Continous
 
 AP.categorical_trait(x::AbstractVector) = !isnothing(DataAPI.refpool(x)) ? HasRefPool() : Categorical()
+AP.categorical_trait(x::AbstractVector{<: Number}) = Continuous()
 
 AP.categoric_labels(::HasRefPool,  xs) = DataAPI.levels(xs)
 
@@ -24,7 +26,7 @@ categorical_range(xs) = categorical_range(categorical_trait(xs), xs)
 
 function categorical_range(t, xs)
     labels  = categorical_labels(t, xs)
-    AP.categoric_range(t, labels)
+    AP.categoric_range(labels)
 end
 
 #categorical_range(::HasRefPool,  xs) = keys(DataAPI.refpool(xs))

@@ -10,7 +10,7 @@ using AbstractPlotting.MakieLayout: Optional, LegendEntry, EntryGroup
 
 using AbstractPlotting: Automatic
 include("categorical.jl")
-using .TmpCategorical: categorical_labels, categorical_range, categorical_positions, categorical_trait, Categorical, HasRefPool, Continuous, Automatic
+using .TmpCategorical: categorical_labels, categorical_range, categorical_positions, categorical_trait, Categorical, HasRefPool, Continuous
 # using AbstractPlotting: categorical_labels, categorical_range, categorical_positions, categorical_trait, Continuous, Automatic
 
 using DataFrames
@@ -19,7 +19,6 @@ using StructArrays
 using UnPack: @unpack
 #using Statistics
 using NamedTupleTools: delete
-
 
 include("mini-language.jl")
 include("attribute-dicts.jl")
