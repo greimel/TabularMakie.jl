@@ -32,19 +32,19 @@ function draw_axis!(P, figpos, df, args, layout_vars, group_dict, style_dict, kw
 		# Compute group key and index for layouting variables
 		if !isnothing(grp_y)
 			ykey = get(groupdf, grp_y) |> unique |> only
-			i = get(groupdf, grp_y) |> refarray |> unique |> only |> Int
+			i = categorical_positions(get(groupdf, grp_y)) |> unique |> only |> Int
 		else
 			i = 1
 		end
 		if !isnothing(grp_x)
 			xkey = get(groupdf, grp_x) |> unique |> only
-			j = get(groupdf, grp_x) |> refarray |> unique |> only |> Int
+			j = categorical_positions(get(groupdf, grp_x)) |> unique |> only |> Int
 		else
 			j = 1
 		end
 		if !isnothing(grp_wrap)
 			wrapkey = get(groupdf, grp_wrap) |> unique |> only
-			ind = get(groupdf, grp_wrap) |> refarray |> unique |> only |> Int
+			ind = categorical_positions(get(groupdf, grp_wrap)) |> unique |> only |> Int
 
 			i, j = fldmod1(ind, J) 
 		end

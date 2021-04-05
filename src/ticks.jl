@@ -12,12 +12,12 @@ function categorical_ticks!(ax, x, y)
 end
 
 function categorical_ticks(var)
-	rp0 = refpool(var)
-	if isnothing(rp0)
+	ticks  = categorical_range(var)
+	labels = categorical_labels(var)
+
+	if ticks isa Automatic
 		nothing
-	else
-		rp = pairs(rp0)
-		ticks = keys(rp), values(rp)
+	else 
+		ticks, labels
 	end
-		
 end

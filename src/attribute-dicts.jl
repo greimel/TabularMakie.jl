@@ -28,10 +28,10 @@ function build_group_dict(df, group_pairs)
 	group_dict = Dict()
 	for (attr, var) in pairs(group_pairs)
 		if attr ∉ [:stack, :dodge, :group]
-			var_levels = levels(get(df, var))
+			var_levels = categorical_labels(get(df, var))
 			thm = AbstractPlotting.current_default_theme().palette
 		
-			group_dict[attr] = [var_levels[i] => thm[attr][][i] for i in 1:length(var_levels)]
+			group_dict[attr] = [var_levels[i] => thm[attr][][i] for i in categorical_range(get(df, var))]
 		end
 	end
 
@@ -75,7 +75,7 @@ function group_style_other(df, dict)
 	(; group_pairs, style_pairs, kws)
 end
 
-get_marker(x, marker_dict) = last.(marker_dict)[refarray(x)]
+get_marker(x, marker_dict) = last.(marker_dict)[categorical_positions(x)]
 
 function unique_or_identity(x)
 	x_unique = unique(x)
@@ -86,7 +86,7 @@ function unique_or_identity(x)
 	end
 end
 
-is_discrete(x) = !(eltype(x) <: Number)
+is_discrete(x) = !(categorical_trait(x) isa Continuous)
 
 "This function replaces group indicators (numbers, categories) by attributes that can be plotted (:solid, :red, etc...)"
 function lookup_symbols(df, group_pairs, style_pairs, group_dict)
