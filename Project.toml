@@ -1,7 +1,7 @@
 name = "TabularMakie"
 uuid = "a1206b2a-a832-4df1-8526-ead2f0882fc9"
 authors = ["Fabian Greimel <fabgrei@gmail.com> and contributors"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 AbstractPlotting = "537997a7-5e4e-5d89-9595-2241ea00577e"
