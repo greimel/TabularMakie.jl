@@ -1,4 +1,4 @@
-function draw_legend!(leg_pos, specification, legend_attr)
+function draw_legend!(specification)
 	@unpack P, group_pairs, style_pairs, group_dict, style_dict = specification
 	
 	leg, cb = draw_legend!(P, group_pairs, style_pairs, group_dict, style_dict)
@@ -7,12 +7,7 @@ end
 function draw_legend!(P, groups, styles, group_dict, style_dict0)
 	groups_ = collect(keys(group_dict))
 
-	legends_grp = length(groups_) > 0 ? map(groups_) do k
-
-		pairs = group_dict[k]
-	
-		legend_discrete(P, k, pairs, var_lab(groups[k]))
-	end : nothing
+	legends_grp = length(group_dict) > 0 ? legends_discrete(P, groups, group_dict) : nothing
 	
 	style_dict = deepcopy(style_dict0)
 	# special case colorbar
@@ -53,12 +48,26 @@ function draw_legend!(P, groups, styles, group_dict, style_dict0)
 	(; leg, cb)
 end
 
-function legend_discrete(P, attribute, groups, title)
+function legends_discrete(P, group_pairs, group_dict)
+	group_pairs = clean_groups(group_pairs)
 	
-	elements = [legend_element(P; attribute => g[2]) for g in groups]
-	labels = first.(groups)
+	inv_pairs = invert_pairs(pairs(group_pairs))
 	
-	(; elements, labels, title)
+	legends = map(inv_pairs) do (var, attrs)
+		subdict = filter(kv -> kv[1] in attrs, group_dict)
+		nts = invert_dict_of_pairs(subdict)
+		
+		legend_discrete(P, var, nts)
+	end |> StructArray
+end
+
+function legend_discrete(P, var, level_kws_vec)
+	legend = map(level_kws_vec) do (level, kws)
+		element = legend_element(P; kws...)
+		(; level, element)
+	end |> StructArray
+	
+	(elements = legend.element, labels = legend.level, title = var_lab(var))
 end
 
 function legend_continuous(P, attribute, extrema, title, n_ticks=4)
@@ -122,4 +131,71 @@ function create_entrygroups(contentgroups::AbstractArray{<:AbstractArray},
         for (labelgroup, contentgroup) in zip(labelgroups, contentgroups)]
 
     entrygroups = Vector{EntryGroup}([(t, en) for (t, en) in zip(titles, entries)])
+end
+
+# Helpers
+function invert_pairs(pairs) 
+	pairs = pairs |> collect
+	
+	attrs = first.(pairs)
+	vars = last.(pairs)
+	
+	map(unique(vars)) do var
+		inds = findall(==(var), vars)	
+		var => attrs[inds]
+	end
+end
+
+function invert_dict_of_pairs(dict)	
+	attrs = collect(keys(dict))
+	
+	df = mapreduce(vcat, attrs) do attr
+		map(dict[attr]) do (level, characteristics)
+			(; level, attr, characteristics)
+		end
+	end |> DataFrame 
+	
+	#@chain df begin
+	combine(
+		groupby(df, :level),
+		[:attr, :characteristics] => vec_of_pairs => :kws
+		) |>
+	x -> NamedTuple.(eachrow(x))
+	
+end
+
+vec_of_pairs(attrs, chars) = [[attr => char for (attr, char) in zip(attrs, chars)], ]
+
+@testset "invert_pairs" begin
+	nt = (color = :variable, linestyle = :variable)
+	prs = pairs(nt) 
+	
+	inverted = [:variable => [:color, :linestyle]]
+	
+	@test invert_pairs(prs) == inverted
+end
+
+@testset "invert_dict_of_pairs" begin
+	attr_level_char = Dict(
+		:color     => ["nominal" => :orange, "real" => :blue],
+		:linestyle => ["nominal" => nothing, "real" => :dash]
+		)
+	
+	level_attr_char = [
+		(level = "nominal", kws = [:color     => :orange,
+								   :linestyle => nothing])
+		(level = "real",    kws = [:color     => :blue,
+								   :linestyle => :dash])
+		]
+	
+	@test invert_dict_of_pairs(attr_level_char) == level_attr_char
+end
+
+function clean_groups(group_pairs)
+	for key in [:group, :stack, :dodge]
+		if haskey(group_pairs, key)
+			group_pairs = delete(group_pairs, key)
+		end
+	end
+	group_pairs
 end

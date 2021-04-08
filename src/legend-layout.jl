@@ -1,5 +1,5 @@
 function add_legend(legs_pos, spec; legend_attr...)
-	leg, cb = draw_legend!(nothing, spec, nothing)
+	leg, cb = draw_legend!(spec)
 
 	has_legend   = !isnothing(leg) 
 	has_colorbar = !isnothing(cb)

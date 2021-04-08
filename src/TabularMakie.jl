@@ -13,11 +13,14 @@ include("categorical.jl")
 using .CategoricalConversions: categorical_labels, categorical_range, categorical_positions, categorical_trait, Categorical, HasRefPool, Continuous
 
 using DataFrames
+using Chain: @chain
 using Underscores: @_
 using StructArrays
 using UnPack: @unpack
 #using Statistics
 using NamedTupleTools: delete
+
+using InlineTest: @testset, @test
 
 include("mini-language.jl")
 include("attribute-dicts.jl")
