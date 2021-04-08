@@ -1,4 +1,4 @@
-function draw_legend!(leg_pos, specification, legend_attr)
+function draw_legend!(specification)
 	@unpack P, group_pairs, style_pairs, group_dict, style_dict = specification
 	
 	leg, cb = draw_legend!(P, group_pairs, style_pairs, group_dict, style_dict)
