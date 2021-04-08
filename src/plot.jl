@@ -23,7 +23,7 @@ function _grouped_plot(::Incremental, P, ax, gdf, group_dict, args, kws, group_p
 	
 	
 	if length(group_pairs) > 0
-		grp = Symbol[Symbol(p[2]) for p in pairs(group_pairs)]
+		grp = [var_key(last(p)) for p in pairs(group_pairs)]
 		unique!(grp)
 	else
 		grp = Symbol[]
