@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.0
+# v0.14.1
 
 using Markdown
 using InteractiveUtils
@@ -136,9 +136,21 @@ end
 lplot(Lines, ts_df,
 		:t,
 		:v;
-		color = :g_co,
+		color = :g_co => "Buahh!",
 		layout_x = :g_la,
 		linestyle = :g_ls,
+		linewidth = 2,
+		legend_attr = (position = :left,)
+)
+
+# ╔═╡ c9c43f1c-9917-4e31-a0a8-dd20791423b0
+lplot(Lines, ts_df,
+		:t,
+		:v;
+		color = :g_co => "Group",
+		linestyle = :g_co => "Group",	
+		layout_x = :g_la,
+		layout_y = :g_ls,
 		linewidth = 2,
 		legend_attr = (position = :left,)
 )
@@ -188,6 +200,8 @@ let
 	spec = specification(Scatter, cs_df,
 		:xxx,
 		:yyy;
+		color = :g_c,
+		marker = :g_c,
 		markersize = :s_m,
 		layout_wrap = :g_lx
 	)
@@ -329,6 +343,7 @@ TableOfContents()
 # ╟─6588b3e6-6941-11eb-198a-15e00c20cb5a
 # ╠═831aa510-6947-11eb-3694-21c2defdbaef
 # ╠═45624846-6950-11eb-1d56-35b025fbbaa4
+# ╠═c9c43f1c-9917-4e31-a0a8-dd20791423b0
 # ╠═220b673c-9304-11eb-0393-55e82f833b60
 # ╟─904fef48-76be-11eb-26b4-fb433306bc3f
 # ╠═c5777782-8bb7-11eb-2f40-3f2ca4012da6
