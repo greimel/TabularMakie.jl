@@ -64,8 +64,8 @@ function draw_axis!(P, figpos, df, args, layout_vars, group_dict, style_dict, kw
 			Label(figpos[1, j, Top()], string(xkey); padding)
 		end
 		if !isnothing(grp_y) && j == 1 
-	    	Box(  figpos[i, 1, Right()], color=:lightgray)
-			Label(figpos[i, 1, Right()], string(ykey); padding, rotation = -pi/2)
+	    	Box(  figpos[i, end, Right()], color=:lightgray)
+			Label(figpos[i, end, Right()], string(ykey); padding, rotation = -pi/2)
 		end
 	end
 		(; plt)#, color=:red)
