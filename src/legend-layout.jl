@@ -21,7 +21,7 @@ function legend_attributes(legend_attr, has_colorbar)
 	framevisible    = pop!(legend_attr, :framevisible, false)
 	titlevisible    = pop!(legend_attr, :titlevisible, true)
 
-    attr = (; legend_position, orientation, titleposition, nbanks, framevisible, titlevisible)
+    attr = (; legend_position, orientation, titleposition, nbanks, framevisible, titlevisible, legend_attr...)
 end
 
 function add_legend_and_colorbar(leg_contents, cb_contents, attr, positions)
@@ -54,7 +54,7 @@ function add_legend(figpos, legend, leg_attributes)
 	adjust_attributes!(leg; leg_attributes...)
 end
 
-function legend_attributes(orientation, has_colorbar, titleposition, nbanks)
+function legend_attributes(orientation, has_colorbar, titleposition, nbanks; attr...)
 	vertical = orientation == :vertical
 	horizontal = !vertical
 	
@@ -64,7 +64,7 @@ function legend_attributes(orientation, has_colorbar, titleposition, nbanks)
 	(; nbanks, orientation, titleposition,
 	   tellwidth = vertical    || stretch_width,
 	   tellheight = horizontal || stretch_height,
-	   framevisible = false)
+	   framevisible = false, attr...)
 end
 
 function adjust_attributes!(legend; attr...)
