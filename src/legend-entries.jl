@@ -7,12 +7,7 @@ end
 function draw_legend!(P, groups, styles, group_dict, style_dict0)
 	groups_ = collect(keys(group_dict))
 
-	legends_grp = length(groups_) > 0 ? map(groups_) do k
-
-		pairs = group_dict[k]
-	
-		legend_discrete(P, k, pairs, var_lab(groups[k]))
-	end : nothing
+	legends_grp = length(group_dict) > 0 ? legends_discrete(P, groups, group_dict) : nothing
 	
 	style_dict = deepcopy(style_dict0)
 	# special case colorbar
@@ -51,6 +46,16 @@ function draw_legend!(P, groups, styles, group_dict, style_dict0)
 	end
 	
 	(; leg, cb)
+end
+
+function legends_discrete(P, group_pairs, group_dict)
+	groups_ = collect(keys(group_dict))
+	map(groups_) do k
+
+		pairs = group_dict[k]
+	
+		legend_discrete(P, k, pairs, var_lab(group_pairs[k]))
+	end
 end
 
 function legend_discrete(P, attribute, groups, title)
