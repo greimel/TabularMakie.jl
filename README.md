@@ -5,7 +5,7 @@
 [![Build Status](https://github.com/greimel/TabularMakie.jl/workflows/CI/badge.svg)](https://github.com/greimel/TabularMakie.jl/actions)
 [![Coverage](https://codecov.io/gh/greimel/TabularMakie.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/greimel/TabularMakie.jl)
 
-I wrote this package because I couldn't figure out how to fix some things in AlgebraOfGraphics.jl (see [#136](https://github.com/JuliaPlots/AlgebraOfGraphics.jl/issues/136)). This package might at some point become the backend for AlgebraOfGraphics.jl.
+I wrote this package because I couldn't figure out how to fix some things in [AlgebraOfGraphics.jl](https://github.com/JuliaPlots/AlgebraOfGraphics.jl) (see [#136](https://github.com/JuliaPlots/AlgebraOfGraphics.jl/issues/136)). This package might at some point become the backend for AlgebraOfGraphics.jl.
 
 ## An example
 <details> <summary> Generate Data </summary>
@@ -34,13 +34,43 @@ end
 
 </details>
 
+This is how you would create a quick plot where the axis are automatically labelled and legends are automatically created.
+
 ```julia
 using TabularMakie, CairoMakie
 
-fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize = :s_m, layout_wrap = :g_lx)
+fig = lplot(Scatter, cs_df,
+	:xxx,
+	:yyy;
+	color = :s_c,
+	marker = :g_m,
+	markersize = :s_m,
+	layout_wrap = :g_lx
+  )
 ```
 
-![](https://greimel.github.io/TabularMakie.jl/dev/fig_cs1.svg)
+You can rename and transform variables on the fly using the `source => transformation => newname` syntax from [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl).
+
+```julia
+using CategoricalArrays: recode!
+
+rec_1(x) = recode!(x, "m 1" => "Nice name", "m 2" => "Other")
+rec_2(x) = recode!(x, "lx 1" => "Panel 1")
+minus1(x) = x .- 1
+
+fig = lplot(Scatter, cs_df,
+	:xxx => minus1,
+	:yyy => ByRow(x -> x + 1) => "the y plus one";
+	color = :s_c => "hey there",
+	marker = :g_m => rec_1 => "bla",
+	markersize = :s_m => :tada,
+	layout_wrap = :g_lx => rec_2
+  )
+
+
+```
+
+![](https://greimel.github.io/TabularMakie.jl/dev/fig_cs2.svg)
 
 
 ## What this package can do but AlgebraOfGraphics can't
