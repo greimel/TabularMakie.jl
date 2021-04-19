@@ -38,7 +38,7 @@ jobs:
 
                   PlutoSliderServer.github_action("nb";
                     Export_cache_dir="pluto_state_cache",
-                    Export_out_dir="."
+                    Export_output_dir="."
                   );'
 
             - name: Deploy to gh-pages
