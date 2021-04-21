@@ -27,11 +27,15 @@ specification(P, df, args...; attr_var_pairs...) = specification(P, df, args, at
 function build_group_dict(df, group_pairs)
 	group_dict = Dict()
 	for (attr, var) in pairs(group_pairs)
-		if attr ∉ [:stack, :dodge, :group]
+		if attr ∉ [:group]
 			var_levels = categorical_labels(get(df, var))
 			thm = AbstractPlotting.current_default_theme().palette
-		
-			group_dict[attr] = [var_levels[i] => thm[attr][][i] for i in categorical_range(get(df, var))]
+
+			if haskey(thm, attr)
+				group_dict[attr] = [var_levels[i] => thm[attr][][i] for i in categorical_range(get(df, var))]
+			else
+				group_dict[attr] = [var_levels[i] => i for i in categorical_range(get(df, var))] # TODO: is is just DataAPI.invrefpool, isn't it?
+			end
 		end
 	end
 
@@ -94,7 +98,11 @@ function lookup_symbols(df, group_pairs, style_pairs, group_dict)
 	
 	map(collect(pairs(group_style_pairs))) do (attr, var)
 		x0 = get(df, var)
-		x = is_discrete(x0) && (attr ∉ [:stack, :dodge]) ? get_marker(x0, group_dict[attr]) |> unique_or_identity : x0
+		if is_discrete(x0)
+			x = get_marker(x0, group_dict[attr]) |> unique_or_identity
+		else
+			x = x0
+		end
 		
 		attr => x
 	end
