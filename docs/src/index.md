@@ -7,6 +7,8 @@ using CairoMakie
 CairoMakie.activate!()
 ```
 
+<details> <summary> Generate some data ... </summary>
+
 ```@example cs
 using DataFrames, CategoricalArrays
 using DataAPI: refarray
@@ -68,6 +70,7 @@ ts_df = let
 end
 nothing # hide
 ```
+</details>
 
 # TabularMakie
 
