@@ -7,7 +7,9 @@ using CairoMakie
 CairoMakie.activate!()
 ```
 
+```@raw html
 <details> <summary> Generate some data ... </summary>
+```
 
 ```@example cs
 using DataFrames, CategoricalArrays
@@ -70,7 +72,22 @@ ts_df = let
 end
 nothing # hide
 ```
+
+```@example bar
+bar_tbl = (x = [1, 1, 1, 2, 2, 2, 3, 3, 3],
+       height = 0.1:0.1:0.9,
+       grp = "Group " .* string.([1, 2, 3, 1, 2, 3, 1, 2, 3]),
+       grp1 = "grp " .* string.([1, 2, 2, 1, 1, 2, 1, 1, 2]),
+       grp2 = "Grp " .* string.([1, 1, 2, 1, 2, 1, 1, 2, 1])
+       )
+
+bar_df = DataFrame(bar_tbl)
+nothing # hide
+```
+
+```@raw html
 </details>
+```
 
 # TabularMakie
 
@@ -134,6 +151,19 @@ save("fig_ts2.svg", fig) # hide
 
 ![fig_ts2](fig_ts2.svg)
 
+
+```@example bar
+fig = lplot(BarPlot, bar_df,
+	:x => "nice name for x",
+	:height,
+	stack = :grp1,
+	dodge = :grp2,
+	color = :grp => " "
+)
+save("fig_bar1.svg", fig); # hide
+```
+
+![fig_bar1](fig_bar1.svg)
 
 ```@index
 ```
