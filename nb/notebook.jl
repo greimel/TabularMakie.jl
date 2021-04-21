@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.14.1
+# v0.14.2
 
 using Markdown
 using InteractiveUtils
@@ -9,7 +9,7 @@ begin
 	using Pkg
 	Pkg.activate(temp = true)
 	Pkg.add(PackageSpec(name = "DataAPI", version = "1.6"))
-	#Pkg.add(PackageSpec(url = "https://github.com/greimel/AbstractPlotting.jl", rev = "groupedbar"))
+	Pkg.add(PackageSpec(name = "AbstractPlotting", rev = "master"))
 	Pkg.add(["Revise", "CairoMakie", "DataFrames", "CategoricalArrays", "PooledArrays", "UnPack", "Random"])
 	Pkg.add("PlutoUI")
 	
@@ -23,9 +23,6 @@ begin
 	
 	Base.show(io::IO, ::MIME"text/html", x::CategoricalArrays.CategoricalValue) = print(io, get(x))
 end
-
-# ╔═╡ b3ba674a-76bd-11eb-3a9a-f3583c9b7d94
-using Random: shuffle
 
 # ╔═╡ 77df0d1a-278a-449c-ac55-30991044afc2
 md"""
@@ -272,30 +269,15 @@ lplot(Scatter, cat_df, :cat0, :y)
 lplot(Scatter, cat_df, :cat => "x in the right order", :y)
 
 # ╔═╡ 96075d2a-76bd-11eb-2d9d-31333dd2f2fd
-bar_df = let
-	n_dodge = 2
-	n_x = 3
-	n_stack = 5
-	n = n_dodge * n_x * n_stack
-	
-	grp_dodge0 = ["dodge $i" for i in 1:n_dodge]
-	grp_x0     = ["x $i"     for i in 1: n_x]
-	grp_stack0 = ["stack $i" for i in 1:n_stack]
-	
-	df = Iterators.product(grp_dodge0, grp_x0, grp_stack0) |> DataFrame
-	cols0 = [:grp_dodge0, :grp_x0, :grp_stack0]
-	cols  = [:grp_dodge,  :grp_x,  :grp_stack]
-	rename!(df, cols0)
-	transform!(df, cols0 .=> categorical .=> cols)
-	
-	cols_i = cols .|> string .|> x -> x[5:end]  .|> x -> x * "_i"
-	transform!(df, cols .=> (x -> Int.(x.refs)) .=> cols_i)
-	
-	df[:,:y] = rand(n)
-	#shuffle
-	df = DataFrame(shuffle(eachrow(df)))
-	df
-end
+bar_tbl = (x = [1, 1, 1, 2, 2, 2, 3, 3, 3],
+       height = 0.1:0.1:0.9,
+       grp = "Group " .* string.([1, 2, 3, 1, 2, 3, 1, 2, 3]),
+       grp1 = "grp " .* string.([1, 2, 2, 1, 1, 2, 1, 1, 2]),
+       grp2 = "Grp " .* string.([1, 1, 2, 1, 2, 1, 1, 2, 1])
+       )
+
+# ╔═╡ 38e89a48-d9d8-4289-9fce-08a672915cdb
+bar_df = DataFrame(bar_tbl)
 
 # ╔═╡ 15490b34-23ec-4ae5-b473-c4c1b7f49e07
 begin
@@ -324,10 +306,13 @@ spec0.style_pairs
 spec0.style_dict
 
 # ╔═╡ c92db4ce-76bd-11eb-0d6f-d55846f72e5b
-lplot(BarPlot, bar_df, :grp_x => "nice name for x", :y, stack = :grp_stack, dodge = :grp_dodge, color = :grp_stack)
+lplot(BarPlot, bar_df, :x => "nice name for x", :height, stack = :grp1, dodge = :grp2, color = :grp)
 
 # ╔═╡ 1eff7f5a-76c0-11eb-247c-9bc3836564ed
-lplot(BarPlot, filter(:grp_stack => ==("stack 1"), bar_df), :grp_x, :y => ByRow(log), dodge = :grp_dodge, color = :grp_dodge)
+lplot(BarPlot, bar_df, :x, :height => ByRow(log), dodge = :grp, color = :grp)
+
+# ╔═╡ 69bf9657-96b0-4b76-860e-c2653c78c89e
+lplot(BarPlot, bar_df, :x, :height, stack = :grp, color = :grp)
 
 # ╔═╡ 911d9356-6952-11eb-1712-bd37da0cba85
 TableOfContents()
@@ -349,8 +334,9 @@ TableOfContents()
 # ╠═c5777782-8bb7-11eb-2f40-3f2ca4012da6
 # ╠═8030ddc6-76b5-11eb-030d-b79fd57b5a6f
 # ╟─9cfe05a6-76be-11eb-06ed-a92dc0e547c4
-# ╠═c92db4ce-76bd-11eb-0d6f-d55846f72e5b
+# ╠═69bf9657-96b0-4b76-860e-c2653c78c89e
 # ╠═1eff7f5a-76c0-11eb-247c-9bc3836564ed
+# ╠═c92db4ce-76bd-11eb-0d6f-d55846f72e5b
 # ╟─a4051f48-6952-11eb-036e-37b3de9c37c2
 # ╠═6cf5fce8-6941-11eb-24f1-6d4281735519
 # ╠═5281fcf6-6946-11eb-34b9-79d05e3ec288
@@ -366,6 +352,6 @@ TableOfContents()
 # ╠═346fba94-6950-11eb-0c18-43cb90d135b8
 # ╠═47184b9e-68ca-11eb-2595-3b8b241a2b9f
 # ╠═07ce7300-76b5-11eb-3132-2bea7add28e1
-# ╠═b3ba674a-76bd-11eb-3a9a-f3583c9b7d94
 # ╠═96075d2a-76bd-11eb-2d9d-31333dd2f2fd
+# ╠═38e89a48-d9d8-4289-9fce-08a672915cdb
 # ╠═911d9356-6952-11eb-1712-bd37da0cba85
