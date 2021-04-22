@@ -7,6 +7,10 @@ using CairoMakie
 CairoMakie.activate!()
 ```
 
+```@raw html
+<details> <summary> Generate some data ... </summary>
+```
+
 ```@example cs
 using DataFrames, CategoricalArrays
 using DataAPI: refarray
@@ -25,7 +29,6 @@ cs_df = let
 	dummy_df[:,:s_c] = 2 .* rand(N) .+ refarray(dummy_df.g_lx)
 	dummy_df
 end
-
 nothing # hide
 ```
 
@@ -69,6 +72,24 @@ end
 nothing # hide
 ```
 
+```@example bar
+using DataFrames
+
+bar_tbl = (x = [1, 1, 1, 2, 2, 2, 3, 3, 3],
+       height = 0.1:0.1:0.9,
+       grp = "Group " .* string.([1, 2, 3, 1, 2, 3, 1, 2, 3]),
+       grp1 = "grp " .* string.([1, 2, 2, 1, 1, 2, 1, 1, 2]),
+       grp2 = "Grp " .* string.([1, 1, 2, 1, 2, 1, 1, 2, 1])
+       )
+
+bar_df = DataFrame(bar_tbl)
+nothing # hide
+```
+
+```@raw html
+</details>
+```
+
 # TabularMakie
 
 This is how it looks.
@@ -78,7 +99,7 @@ using TabularMakie, CairoMakie
 
 fig = lplot(Scatter, cs_df, :xxx, :yyy; color = :s_c, marker = :g_m,  markersize = :s_m, layout_wrap = :g_lx)
 
-save("fig_cs1.svg", fig) # hide
+save("fig_cs1.svg", fig); # hide
 ```
 
 ![fig_cs1](fig_cs1.svg)
@@ -108,7 +129,7 @@ fig = lplot(Scatter, cs_df,
 	layout_wrap = :g_lx => rec_2	
   )
 
-save("fig_cs2.svg", fig) # hide
+save("fig_cs2.svg", fig); # hide
 ```
 
 ![fig_cs2](fig_cs2.svg)
@@ -116,8 +137,16 @@ save("fig_cs2.svg", fig) # hide
 ```@example ts
 using TabularMakie, CairoMakie
 
-fig = lplot(Lines, ts_df, :t, :v; color = :g_co, layout_x = :g_la, linestyle = :g_ls, linewidth = 2)
-save("fig_ts1.svg", fig) # hide
+fig = lplot(Lines, ts_df,
+		:t,
+		:v;
+		color = :g_co => "Buahh!",
+		layout_x = :g_la,
+		linestyle = :g_ls,
+		linewidth = 2,
+		legend_attr = (position = :left,)
+)
+save("fig_ts1.svg", fig); # hide
 ```
 
 ![fig_ts1](fig_ts1.svg)
@@ -126,11 +155,26 @@ save("fig_ts1.svg", fig) # hide
 using TabularMakie, CairoMakie
 
 fig = lplot(Lines, ts_df, :t, :v; color = :s_co, layout_y = :g_co, group = :grp )
-save("fig_ts2.svg", fig) # hide
+save("fig_ts2.svg", fig); # hide
 ```
 
 ![fig_ts2](fig_ts2.svg)
 
+
+```@example bar
+using TabularMakie, CairoMakie
+
+fig = lplot(BarPlot, bar_df,
+	:x => "nice name for x",
+	:height,
+	stack = :grp1,
+	dodge = :grp2,
+	color = :grp => " "
+)
+save("fig_bar1.svg", fig); # hide
+```
+
+![fig_bar1](fig_bar1.svg)
 
 ```@index
 ```

@@ -96,7 +96,7 @@ marker_element(; color       = from_default_theme(:color),
 		        kwargs...) =
 		MarkerElement( ; color, marker, strokecolor, markerpoints, kwargs...)
 
-poly_element(; color = from_default_thme(:color),
+poly_element(; color = from_default_theme(:color),
 	 		   strokecolor = :transparent,
 			   kwargs...) = 
 		PolyElement(; color, strokecolor, kwargs...)

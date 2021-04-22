@@ -6,10 +6,10 @@ function tplot(P, df, args...;
 			   
 	fig = Figure()
 	
-   # 1. Preparations
-   spec = specification(P, df, args, attr_var_pairs)
+    # 1. Preparations
+    spec = specification(P, df, args, attr_var_pairs)
 
-   # 2. Figure out positions of axis and legend
+    # 2. Figure out positions of axis and legend
 	if !haskey(legend_attr, :position)
 		legend_attr = (; position = :top, legend_attr...)
 	end

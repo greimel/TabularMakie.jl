@@ -305,14 +305,20 @@ spec0.style_pairs
 # ╔═╡ 1afe791f-eee2-4b03-a2b0-474ddd2044c1
 spec0.style_dict
 
-# ╔═╡ c92db4ce-76bd-11eb-0d6f-d55846f72e5b
-lplot(BarPlot, bar_df, :x => "nice name for x", :height, stack = :grp1, dodge = :grp2, color = :grp)
+# ╔═╡ 69bf9657-96b0-4b76-860e-c2653c78c89e
+lplot(BarPlot, bar_df, :x, :height, stack = :grp, color = :grp)
 
 # ╔═╡ 1eff7f5a-76c0-11eb-247c-9bc3836564ed
 lplot(BarPlot, bar_df, :x, :height => ByRow(log), dodge = :grp, color = :grp)
 
-# ╔═╡ 69bf9657-96b0-4b76-860e-c2653c78c89e
-lplot(BarPlot, bar_df, :x, :height, stack = :grp, color = :grp)
+# ╔═╡ c92db4ce-76bd-11eb-0d6f-d55846f72e5b
+lplot(BarPlot, bar_df,
+	:x => "nice name for x",
+	:height,
+	stack = :grp1,
+	dodge = :grp2,
+	color = :grp => " "
+)
 
 # ╔═╡ 911d9356-6952-11eb-1712-bd37da0cba85
 TableOfContents()
