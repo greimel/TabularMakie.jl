@@ -73,6 +73,8 @@ nothing # hide
 ```
 
 ```@example bar
+using DataFrames
+
 bar_tbl = (x = [1, 1, 1, 2, 2, 2, 3, 3, 3],
        height = 0.1:0.1:0.9,
        grp = "Group " .* string.([1, 2, 3, 1, 2, 3, 1, 2, 3]),
@@ -160,6 +162,8 @@ save("fig_ts2.svg", fig); # hide
 
 
 ```@example bar
+using TabularMakie, CairoMakie
+
 fig = lplot(BarPlot, bar_df,
 	:x => "nice name for x",
 	:height,
