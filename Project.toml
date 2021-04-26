@@ -15,7 +15,7 @@ UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 Underscores = "d9a01c3f-67ce-4d8c-9b55-35f6e4050bb1"
 
 [compat]
-AbstractPlotting = "0.17.4"
+AbstractPlotting = "0.17.4, 0.18"
 Chain = "0.4"
 DataAPI = "1.6"
 DataFrames = "0.22, 1"
