@@ -81,8 +81,6 @@ end
 
 from_default_theme(attr) = AbstractPlotting.current_default_theme()[attr]
 
-from_default_theme(:palette)
-
 line_element(; color     = :black, #default_theme(:color),
 			   linestyle = nothing,
 			   linewidth = 1.5,

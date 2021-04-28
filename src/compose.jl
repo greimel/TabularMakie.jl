@@ -1,10 +1,11 @@
 function tplot(P, df, args...;
+			   figure = (;),
 			   axis_attr = (;),
 			   legend_attr = (;),
 			   title = nothing,               
 			   attr_var_pairs...)
 			   
-	fig = Figure()
+	fig = Figure(; figure...)
 	
     # 1. Preparations
     spec = specification(P, df, args, attr_var_pairs)
