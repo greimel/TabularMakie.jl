@@ -5,7 +5,9 @@
 [![Build Status](https://github.com/greimel/TabularMakie.jl/workflows/CI/badge.svg)](https://github.com/greimel/TabularMakie.jl/actions)
 [![Coverage](https://codecov.io/gh/greimel/TabularMakie.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/greimel/TabularMakie.jl)
 
-I wrote this package because I couldn't figure out how to fix some things in [AlgebraOfGraphics.jl](https://github.com/JuliaPlots/AlgebraOfGraphics.jl) (see [#136](https://github.com/JuliaPlots/AlgebraOfGraphics.jl/issues/136)). This package might at some point become the backend for AlgebraOfGraphics.jl.
+I wrote this package because I couldn't figure out how to fix some things in [AlgebraOfGraphics.jl](https://github.com/JuliaPlots/AlgebraOfGraphics.jl) (see [#136](https://github.com/JuliaPlots/AlgebraOfGraphics.jl/issues/136)).
+
+**NOTE:** Most of these things are fixed in AlgebraOfGraphics.jl 0.4. 
 
 ## An example
 <details> <summary> Generate Data </summary>
@@ -75,12 +77,14 @@ fig = lplot(Scatter, cs_df,
 
 ## What this package can do but AlgebraOfGraphics can't
 
-* rename or transform variables on the fly (e.g. `:xxx => "name of x"` or `:yyy => ByRow(log)`)
-* supports `layout_wrap` (in addition to `layout_x` and `layout_y`)
-* generates legend for continuous aesthetics (e.g. markersize and linewidth)
-* generates a colorbar if `color` is provided with a continuous variable
-* adds a non-incremental mode for creating a plot, this allows creation of grouped bar plots
-* allows access of the legend to change position and attributes
+* <s> rename or transform variables on the fly (e.g. `:xxx => "name of x"` or `:yyy => ByRow(log)`) </s>
+* <s> supports `layout_wrap` (in addition to `layout_x` and `layout_y`) </s>
+* <s> generates legend for continuous aesthetics (e.g. markersize and linewidth) </s>
+* <s> generates a colorbar if `color` is provided with a continuous variable </s>
+* <s> adds a non-incremental mode for creating a plot, this allows creation of grouped bar plots </s>
+* <s> allows access of the legend to change position and attributes </s>
+
+All these issues were fixed in AlgebraOfGraphics 0.4
 
 ## What this package can't do but AlgebraOfGraphics can
 
